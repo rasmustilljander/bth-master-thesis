@@ -1,0 +1,16 @@
+\documentclass[../main.tex]{subfiles}
+\begin{document}
+\textit{This part can be atleast 2 pages.}
+
+% Related work
+The basic SPH \cite{muller2003particle} is highly dependant on the particles resolution to achieve visually pleasing results. Low resolution fluids (large and few particles) suffers from problems like poor surface features and damping of velocities. On the other hand, high resolution fluids (small and many particles) are computationally expensive. To reduce these problems, dynamic particle sizes was introduced in \cite{adams2007adaptively} where large particles were split into smaller ones where the fluid demonstrates complex behaviour. This, however, rose new issues where pressure oscillations could occur as a result of particles merging and splitting. A technique to avoid these issues was suggested in \cite{solenthaler2011two} where two distinct resolution areas were calculated separately.
+
+Another way to decrease computation costs is by lowering the time step constraints, a larger time step means that more movement is calculated in each time step. A weakly compressible SPH (WCSPH) method \cite{monaghan2005smoothed,becker2007weakly} was introduced and was improved by a predictive-corrective incompressible SPH (PCISPH) method \cite{solenthaler2009predictive}. It preserves the incompressibility in fluids with the added benefit of a lower computation cost. As a way to increase efficiency globally, adaptive time stepping was included in PCISPH \cite{ihmsen2010boundary}. This was later refined in \cite{goswami2014regional} where different regions have varying time steps depending on the complexity in those regions, although this was done with the WCSPH method. 
+
+%%%%%%%%
+\section{Added value / Gap}
+%%%%%%%%
+\textit{"Added value / Gap" should not have it's own section, however. This have to be included. Self explanatory title.}
+However, to date no one has proposed an algorithm using regional time stepping together with various resolution particles. Since each algorithm optimizes different aspects of the SPH technique it can be expected that the efficiency is increased by combining them, taking the SPH technique one step closer to real-time simulation on the CPU.
+
+\end{document}

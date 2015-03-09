@@ -1,0 +1,17 @@
+Page    Pages       Content
+1       1           Frontpage
+2       1           Contact information
+3       1           Abstract
+4       1           List of figures
+5       1           List of tables
+6       1           List of algorithms
+7       1           Table of contents
+8       1           Table of contents
+
+9-10    2           Introduction
+11-13   3           Related work
+14-22   9           Method                      (Images/algorithms/equations) Specific image for pipeline
+23-28   6           Results                     (Images/tables/equations)
+29-35   7           Analysis                    (Images/tables/equations)
+36-38   3           Conclusions and Future Work
+39-40   2           References
