@@ -1,0 +1,40 @@
+\documentclass[../main.tex]{subfiles}
+\begin{document}
+
+
+%%%%%%%%
+\section{Two-scale}
+%%%%%%%%
+\textit{Brief description of two-scale and its key benefitional parts}
+In \cite{solenthaler2011two}, the fluid particles are separated into simulations with different scales, a low resolution L and a high resolution H. The lower resolution set, as seen in Figure \ref{fig:TwoPartLAndH} as blue particles, is the base of the simulation and computes the physics for the whole fluid. The higher resolution, illustrated as yellow in Figure \ref{fig:TwoPartLAndH}, is determined as a subset of the whole fluid; this represents the second simulation we mentioned earlier. An additional set of particles exist and is used to model the boundary condition for H. These boundary particles are illustrated in Figure \ref{fig:TwoPartLAndH} as red. The higher resolution set, H, represents the parts of the fluid where more detailed computations is needed to reach a visually appealing result.
+
+The overall goal with this method is to reduce the amount of particles, and thus lowering the total computation need, without lowering the visual quality. This is accomplished by reducing the amount of particles in the lower resolution set L. To furthermore avoid decreasing the visual quality, the particles that remains in L is increased in size. This allows for a fewer amount of particles to represent a substantially larger area than would be possible without resizing them. 
+
+Moreover, the particles in H are reduced in size and increased in quantity. This increases the computational requirement for H, however, as H represents the visually critical part of the simulation this is the intention. This also means less computations on the less critical areas.
+
+\subsection{}
+
+%%%%%%%%
+\section{RTS}
+%%%%%%%%
+\textit{Brief description of RTS (Talk to Prashant about not having this as a section as RTS with PCISPH is not published yet)}
+In \cite{goswami2014regional} they define a virtual grid of three dimensional regions, called blocks. Each block is of the same size and each particle exist in exactly one block. The blocks are designed in such a way that if \textit{s} represents the initial particle spacing, then each block has a support radius \textit{r} such that \textit{r $\leq$ 2s}. The region-based time-step method is illustrated in Figure \ref{fig:regions} and can be explained in three steps:
+\\
+\\1. All particles compute their velocity and total force.
+\\2. Particles conveys their attributes to their containing region. A minimum time step is computed for the region.
+\\3. The time step is applied on every particle in that region. 
+
+The main objective of the method, to speed up the simulation, is accomplished by allowing each particle to get the largest possible time step while the physical accuracy still remains the same. This is accomplished with the assumption that liquid within small well defined boundaries are the subject of the same pressure and force. This infers that instead of using the same global time step for every particle we let each block calculate a lowest required sub-step based on particles within. Ideally this sub-step is of the same size as the current global time step, that is, as high as possible. However, some particles within some blocks may require a lower sub-step to obtain the visual result desired. 
+
+The opening for multiple individual time-steps also conveys the possibility for creating a non-synchronized simulation. This could lead to undesired results as it implies that particles would not interact with each other in the same timeframe. This, however, is solved by the design of Algorithm \ref{alg:RegionalTime} which takes the synchronization into account (line 9). If any particle would ever transition faster in the simulation, because of a separate time step, they will have their following physics computations halted until they are synchronized once again.
+
+
+%%%%%%%%
+\section{Our method}
+%%%%%%%%
+\subfile{sections/3_method/3_our-method/our-method}
+
+
+
+
+\end{document}

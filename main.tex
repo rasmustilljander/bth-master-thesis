@@ -1,7 +1,7 @@
 \documentclass[a4paper,oneside]{bth}
 
 \usepackage{subfiles}
-
+\usepackage{thesis_layout}
 \usepackage{amsmath}
 \usepackage{mathenv}
 \usepackage{amssymb}
@@ -14,6 +14,7 @@
 \usepackage{listings}
 \usepackage{url}
 \usepackage{xspace}
+
 \usepackage{xtab}
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
@@ -160,22 +161,22 @@ below the abstract.
 \pagenumbering{arabic}
 
 \chapter{Introduction}
-\subfile{sections/introduction}
+\subfile{\sectionIntroFile}
 
 \chapter{Related Work}
-\subfile{sections/related-work}
+\subfile{\sectionRelatedWorkFile}
 
 \chapter{Method}
-\subfile{sections/method}
+\subfile{\sectionMethodPath}
 
 \chapter{Results}
-\subfile{sections/results}
+\subfile{\sectionResultsFile}
 
 \chapter{Analysis}
-\subfile{sections/analysis}
+\subfile{\sectionAnalysisFile}
 
 \chapter{Conclusions and Future Work}
-\subfile{sections/conclusion}
+\subfile{\sectionConclusionFile}
 
 \bibliographystyle{apalike}
 \nocite{*}

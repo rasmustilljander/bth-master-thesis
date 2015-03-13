@@ -1,0 +1,13 @@
+\textit{Two simulation resolutions with multiple independent time steps in them. This should be the BIG part. Algorithm table and multiple subparts. If a specific variable have to be calculated with some special condition we'll have to explain this here.}
+As illustrated in Figure \ref{fig:TwoPartLAndH} we adopt the idea of \cite{solenthaler2011two} where we compute the simulation in two distinct parts, the low resolution simulation L and the high resolution H. However, instead of performing the computation for L and H with a standard SPH or PCISPH we rather adopt the idea of \cite{goswami2014regional}. As such we subdivide the current simulation into blocks in such a way that each particle exist in exactly one block. Each block then calculates the lowest sub-step required for the particles within and performs necessary physical calculations using using the new sub-step. This implies that the idea of \cite{goswami2014regional}, illustrated as Algorithm \ref{alg:RegionalTime}, is performed once for L, the whole fluid, and then \textit{nSubSteps} times for H per iteration.
+
+%%%%%%%%
+\subsection{Neighborhood search}
+%%%%%%%%
+\textit{How neighborhood search is done, if any changes.}
+
+
+%%%%%%%%
+\subsection{Dynamically isolate the high resolution region}
+%%%%%%%%
+\textit{How we isolate H. Floodfilling.}

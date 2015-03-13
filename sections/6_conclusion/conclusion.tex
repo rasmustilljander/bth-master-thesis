@@ -1,0 +1,24 @@
+\documentclass[../main.tex]{subfiles}
+\begin{document}
+\textit{Summary. What have we done, what did we acheive, why did we acheive this. What factors was important, specific conditions such as language, OS, frameworke and machine.}
+We have combined two different techniques that simulates fluids, which both focus on reducing simulation times, and have successfully utilized both techniques and reduced simulation times even further.
+
+
+%%%%%%%%
+\section{Future work}
+%%%%%%%%
+\textit{How can this be expanded in the future? What implications does this have on existing work? Could it be combined with any already technique?}
+Usage of general purpose graphical units (GPU) could further be used to speedup. 
+We have presented a method where we effectively split a fluid simulation into two distinct parts, the low resolution set L and the subset of L that represents the high resolution part H. The low resolution uses particles with a smaller number or particles.
+Moreover, we continue by breaking these sets into three-dimensional regions, also called blocks, in such a way that each particle exist in exactly one block. Each block then calculates the smallest time-step required based on the attributes of every particle in the block. This is an attempt to ensure the highest possible time-step for that block, and thus its particles. 
+%This is done twice per frame, once for the high resolution and once for the low resolution set.
+
+The method presented in this paper could also be expanded using the Graphic Processing Unit(GPU) rather than the Central Processing Unit(CPU). As mentioned in \cite{goswami2014regional} the blocks can be treated as parallelization units for computing the physics of particles within, as also implemented in \cite{goswami2010interactive}.
+
+There is another point of view that could be explored. Rather than combining the two methods as shown in this paper it could also be interesting to explore the possibility to take advantage of differently sized particles in different regions.
+
+Our conclusion in this paper is incomplete as we have no real results. However, combining the two methods lies as the basis for a master thesis planned by the two authors.
+
+
+
+\end{document}
