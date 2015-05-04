@@ -1,11 +1,26 @@
-\documentclass[../main.tex]{subfiles}
+\documentclass[../../main.tex]{subfiles}
 \begin{document}
-\textit{This part can be atleast 2 pages.}
 
 % Related work
 The basic SPH \cite{muller2003particle} is highly dependant on the particles resolution to achieve visually pleasing results. Low resolution fluids (large and few particles) suffers from problems like poor surface features and damping of velocities. On the other hand, high resolution fluids (small and many particles) are computationally expensive. To reduce these problems, dynamic particle sizes was introduced in \cite{adams2007adaptively} where large particles were split into smaller ones where the fluid demonstrates complex behaviour. This, however, rose new issues where pressure oscillations could occur as a result of particles merging and splitting. A technique to avoid these issues was suggested in \cite{solenthaler2011two} where two distinct resolution areas were calculated separately.
 
 Another way to decrease computation costs is by lowering the time step constraints, a larger time step means that more movement is calculated in each time step. A weakly compressible SPH (WCSPH) method \cite{monaghan2005smoothed,becker2007weakly} was introduced and was improved by a predictive-corrective incompressible SPH (PCISPH) method \cite{solenthaler2009predictive}. It preserves the incompressibility in fluids with the added benefit of a lower computation cost. As a way to increase efficiency globally, adaptive time stepping was included in PCISPH \cite{ihmsen2010boundary}. This was later refined in \cite{goswami2014regional} where different regions have varying time steps depending on the complexity in those regions, although this was done with the WCSPH method. 
+
+%Grid based work
+It is common to use height-field models to simulate water with Eulerian techniques, first by Kass and Miller [90]. This was later combined with marked particles to keep track of the free surface, Foster and Metaxas[96]. Something called the level set method uses several level sets and surface marker particles, Enright [02]. (Det känns rätt onödigt att gå igenom sånt här som egentligen inte har med vårt arbete att göra mer än att det är vätskesimulering)
+
+% Particle based work
+Early attempts at simulating fluids using particles was done by Miller [89]. 
+SPH was introduced by Lucy [77] to be used in astrophysics and was later adopted to be used in simulating smoke, gases and fires. (Stam [95] more refs). Since fluids are incompressible the SPH method was unsuitable in its normal form. Muller [03] applied SPH to fluids by doing some things with the kernels and Navier-Stokes equation. Another solution was introduced by Becker and Teschner [07]to speed up the simulation, the Weakly Compressible SPH (WCPSH)(ref). In order to maintain an almost incompressible fluid small time steps are required, since small density variations cause large pressure jumps. A method that allows for larger time steps while at the same time enforces incompressibility is the Predictive-Corrective Incompressible SPH (ref). It works by predicting positions and then correcting the forces and stuff (more stuff plox). People have been trying to improve efficiency of the PCISPH by changing the time step dynamically (ref) and also changing particle size (ref others). 
+
+Solenthaler also did a particle size improvement in Two-scale resolution (ref) which uses two separate simulations with different particle sizes. (Inte säker på att vi vill beskriva den här eftersom vi antagligen kommer gå igenom den noggrannare under "Method"). 
+
+To improve efficiency in the time step department, Goswami introduced a regional time stepping algorithm which changes time step locally depending on the the amount of action in each region. (Samma som ovan, bör beskrivas mer under "Method"). 
+
+Other fluid solvers include the Moving Particles Semi-implicit and maybe the Implicit SPH? method which solves a pressure Poisson equation. However, this is slow as balls and should not be used. 
+
+
+{\color{red}Maybe explain PCISPH in more detail? Either here or in method}
 
 %%%%%%%%
 \section{Added value / Gap}
@@ -14,3 +29,10 @@ Another way to decrease computation costs is by lowering the time step constrain
 However, to date no one has proposed an algorithm using regional time stepping together with various resolution particles. Since each algorithm optimizes different aspects of the SPH technique it can be expected that the efficiency is increased by combining them, taking the SPH technique one step closer to real-time simulation on the CPU.
 
 \end{document}
+
+% Miller 98: GLOBULAR DYNAMICS: A CONNECTED PARTICLE SYSTEM FOR ANIMATING VISCOUS FLUIDS
+% Lucy 77: A numerical approach to the testing of the fission hypothesis
+% Stam Fiume 95: Depicting Fire and Other Gaseous Phenomena Using Diffusion Processes
+% Muller 03: Particle-Based Fluid Simulation for Interactive Applications
+% Becker and Teschner [07]: Weakly compressible SPH for free surface flows
+% Enright 02: A Hybrid Particle Level Set Method for Improved Interface Capturing

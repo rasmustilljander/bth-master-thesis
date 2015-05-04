@@ -1,4 +1,4 @@
-\documentclass[../main.tex]{subfiles}
+\documentclass[../../main.tex]{subfiles}
 \begin{document}
 \textit{Summary. What have we done, what did we acheive, why did we acheive this. What factors was important, specific conditions such as language, OS, frameworke and machine.}
 We have combined two different techniques that simulates fluids, which both focus on reducing simulation times, and have successfully utilized both techniques and reduced simulation times even further.
@@ -8,6 +8,7 @@ We have combined two different techniques that simulates fluids, which both focu
 \section{Future work}
 %%%%%%%%
 \textit{How can this be expanded in the future? What implications does this have on existing work? Could it be combined with any already technique?}
+Surface detection thingy. 
 Usage of general purpose graphical units (GPU) could further be used to speedup. 
 We have presented a method where we effectively split a fluid simulation into two distinct parts, the low resolution set L and the subset of L that represents the high resolution part H. The low resolution uses particles with a smaller number or particles.
 Moreover, we continue by breaking these sets into three-dimensional regions, also called blocks, in such a way that each particle exist in exactly one block. Each block then calculates the smallest time-step required based on the attributes of every particle in the block. This is an attempt to ensure the highest possible time-step for that block, and thus its particles. 
