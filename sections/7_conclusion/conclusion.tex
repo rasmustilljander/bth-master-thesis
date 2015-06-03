@@ -1,5 +1,9 @@
 \documentclass[../../main.tex]{subfiles}
 \begin{document}
+
+
+% Conclusion and future work
+
 \textit{Summary. What have we done, what did we acheive, why did we acheive this. What factors was important, specific conditions such as language, OS, frameworke and machine.}
 We have combined two different techniques that simulates fluids, which both focus on reducing simulation times, and have successfully utilized both techniques and reduced simulation times even further.
 
@@ -18,8 +22,13 @@ The method presented in this paper could also be expanded using the Graphic Proc
 
 There is another point of view that could be explored. Rather than combining the two methods as shown in this paper it could also be interesting to explore the possibility to take advantage of differently sized particles in different regions.
 
-Our conclusion in this paper is incomplete as we have no real results. However, combining the two methods lies as the basis for a master thesis planned by the two authors.
+To further explore the possibility to perform more complex calculations for determining the high resolution area for particles in L could be interesting. In this paper we manually determines, prior to the simulation, one single 3-dimensional cuboid which we use to performs simple location based queries against. Taking this to the next level and explore the possibility with either surface detection or using a view frustum to define high resolution areas could be an interesting next step. 
 
+Another interesting idea would be to dynamically set the H area to the R1 and R2 since that is probably where the most action will be.
 
+%%%%%%%%
+\section{Lessons learned}
+%%%%%%%%
+Just because one have access to someone else codebase, does not mean that the workload decreases very much. Simulating fluids with multi-resolution particles is difficult. CFL condition is not very straightforward. 
 
 \end{document}

@@ -15,6 +15,12 @@
 \usepackage{url}
 \usepackage{xspace}
 \usepackage{color}
+\usepackage{algorithm}
+\usepackage[noend]{algpseudocode}
+\usepackage{hyperref}
+\usepackage{mathtools}
+\usepackage{fixltx2e}
+\usepackage{csquotes}
 
 \usepackage{xtab}
 \usepackage[utf8]{inputenc}
@@ -34,7 +40,7 @@
 \newtheorem{qu}{\textbf{Question}}[chapter]
 
 \begin{document}
-
+\tracingall
 \pagestyle{plain}
 \pagenumbering{roman}
 
@@ -55,7 +61,7 @@
 
 \par\vspace {7cm}
 
-{\Huge\textbf{Regional time stepping with two-scale PCISPH method}}   
+{\Huge\textbf{Regional time stepping with two-scale PCISPH method}}   % two-scale resolution ?
 
 \par\vspace {0.5cm}
 
@@ -73,7 +79,7 @@
 \end{center}
 
 \noindent%
-{\small Dept. Computer Science \& Engineering \\
+{\small Faculty of Computing \\
 Blekinge Institute of Technology\\
 SE--371 79 Karlskrona, Sweden}
 
@@ -105,7 +111,7 @@ Dept. Computer Science \& Engineering
 \par\vspace {1cm}
 \noindent%
  \\
-Dept. Computer Science \& Engineering & Internet & : & www.bth.se/didd\\
+Faculty of Computing & Internet & : & www.bth.se\\
 Blekinge Institute of Technology & Phone	& : & +46 455 38 50 00 \\
 SE--371 79 Karlskrona, Sweden & Fax & : & +46 455 38 50 57 \\
 \end{tabular}
@@ -167,13 +173,18 @@ below the abstract.
 \chapter{Related Work}
 \subfile{\sectionRelatedWorkFile}
 
+\chapter{Aim and objectives}
+\subfile{\sectionAimAndObjectivesFile}
+
+% Enligt Kim och Erik så bör vi ha en section vid namn "Aim and objective" här
+
 \chapter{Method}
 \subfile{\sectionMethodFile}
 
-\chapter{Results}
-\subfile{\sectionResultsFile}
+\chapter{Implementation}
+\subfile{\sectionImplementationFile}
 
-\chapter{Analysis}
+\chapter{Results and discussion}
 \subfile{\sectionAnalysisFile}
 
 \chapter{Conclusions and Future Work}

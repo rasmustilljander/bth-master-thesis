@@ -2,26 +2,29 @@
 \begin{document}
 
 
+% Two-scale
+% RTS
+% Combined
+
+
 %%%%%%%%
 \section{Two-scale}
 %%%%%%%%
-\textit{Brief description of two-scale and its key benefitional parts}
-In \cite{solenthaler2011two}, the fluid particles are separated into simulations with different scales, a low resolution L and a high resolution H. The lower resolution set, as seen in Figure \ref{fig:TwoPartLAndH} as blue particles, is the base of the simulation and computes the physics for the whole fluid. The higher resolution, illustrated as yellow in Figure \ref{fig:TwoPartLAndH}, is determined as a subset of the whole fluid; this represents the second simulation we mentioned earlier. An additional set of particles exist and is used to model the boundary condition for H. These boundary particles are illustrated in Figure \ref{fig:TwoPartLAndH} as red. The higher resolution set, H, represents the parts of the fluid where more detailed fluid is needed to reach a visually appealing result.
+\textit{Brief description of two-scale and its key beneficial parts}
 
-The overall goal with this method is to reduce the amount of particles, and thus lowering the total computation need, without lowering the visual quality. This is accomplished by reducing the amount of particles in the lower resolution set L. To furthermore avoid decreasing the visual quality, the particles that remains in L is increased in size <not increased in size but rather is larger from the beginning>. This allows for a fewer amount of particles to represent a substantially larger area than would be possible without resizing them. 
+The two-scale method runs two simulations with two different particle sizes. The one with large particles, the low resolution L, is the base simulation and represents the whole fluid. The high resolution, H, represents a subset of the fluid, either user defined or dynamically decided. L is half the resolution of H and thus the L-particles are 8 times larger than the H-particles. This allows for a fewer amount of particles to represent a substantially larger area than would be possible without resizing them. Thus the simulation does not need as many particles which reduces the computation time. The region of higher resolution can be set where the details of the simulation is more important, like the surface, where the camera looks, or where obstacles are. 
 
-Moreover, the particles in H are reduced in size and increased in quantity. This increases the computational requirement for H, however, as H represents the visually critical part of the simulation this is the intention. This also means less computations on the less critical areas.
-
-Each H-particle keeps track of its parent particle in L. In the so called boundary region, H-particles are created and destroyed, depending on if their parent particle is entering or leaving the active region. When an L-particle enters the boundary region a set of smaller particles are created, these particles will be advected for as long as they are in a region with width Support radius, around the active region. We do not calculate physics on them since they need a full neighborhood to be correct. When the parent particle exit the boundary region and enter the real active region its child particles (which were previously just being advected) enter a relaxed state. The particles are in this state during a short period of time, and during we interpolate their quantities from their advected ones (the ones from their parent) to ones that they calculate on themselves (since they now have a full neighborhood). 
+Each H-particle keeps track of its parent particle in L. In the so called boundary region, H-particles are created and destroyed, depending on if their parent particle is entering or leaving the active region. When an L-particle enters the boundary region a set of smaller particles are created, these particles will be advected for as long as they are in a region with width Support radius, around the active region. We do not calculate physics on them since they need a full neighborhood to be correct. When the parent particle exit the boundary region and enter the real active region its child particles (which were previously just being advected) enter a relaxed state. The particles are in this state during a short period of time, during which we interpolate their quantities from their advected ones (the ones from their parent) to ones that they calculate on themselves (since they now have a full neighborhood). 
 
 The L-particles in the active region receive feedback force from the smaller particles so that the different fluid simulations do not diverge significantly and because the higher resolution simulation has more details. 
 
-For the sake of simplicity and because of time restraints we chose not to implement the surface detection algorithm. 
+For the sake of simplicity and because of time restraints we chose not to implement the surface detection algorithm.
+
+We changed the velocity relaxation of particles by limiting the adding velocity instead of the total. The beta value is set to [VALUE] from experiments. 
 
 %%%%%%%%
 \section{RTS for PCISPH}
 %%%%%%%%
-\textit{Brief description of RTS (Talk to Prashant about not having this as a section as RTS with PCISPH is not published yet)}
 In \cite{goswami2014regional} they define a virtual grid of three dimensional regions, called blocks. Each block is of the same size and each particle exist in exactly one block. The blocks are designed in such a way that if \textit{s} represents the initial particle spacing, then each block has a support radius \textit{r} such that \textit{r $\leq$ 2s}. The region-based time-step method is illustrated in Figure \ref{fig:regions} and can be explained in three steps:
 \\
 \\1. All particles compute their velocity and total force.
@@ -44,35 +47,27 @@ For R1 particles, i.e. fast particles, a larger radius is used when calculating 
 %%%%%%%%
 \section{Our method}
 %%%%%%%%
-\textit{Two simulation resolutions with multiple independent time steps in them. This should be the BIG part. Algorithm table and multiple subparts. If a specific variable have to be calculated with some special condition we'll have to explain this here.}
 %As illustrated in Figure \ref{fig:TwoPartLAndH} we adopt the idea of \cite{solenthaler2011two} where we compute the simulation in two distinct parts, the low resolution simulation L and the high resolution H. However, instead of performing the computation for L and H with a standard SPH or PCISPH we rather adopt the idea of \cite{goswami2014regional}. As such we subdivide the current simulation into blocks in such a way that each particle exist in exactly one block. Each block then calculates the lowest sub-step required for the particles within and performs necessary physical calculations using using the new sub-step. This implies that the idea of \cite{goswami2014regional}, illustrated as Algorithm \ref{alg:RegionalTime}, is performed once for L, the whole fluid, and then \textit{nSubSteps} times for H per iteration.
 
 Based upon the RTS algorithm, we inserted the two-scale algorithm into the minor step for loop. Everything before the minor steps are the same, but is done for both the L- and the H-simulation. The DoPhysics in our combined algorithm corresponds to the original RTS minor step but we have moved both Determine regions and Update parent particle to outside the minor loop. We did this because they change the particle list in the H-simulation and therefore invalidates the neighborhood grid. Since we would like to update the neighborhood as seldom as possible we make sure that things that change it only happens once every major step. 
 
-We are using the same constants for feedback force, pressure force interpolatetion, relax time and region conditions, maybe? Maybe this should be mentioned in some kind of implementation section?
-
-We use a predetermined area for the H particles and let them calculate which region they belong to separately from the L simulation. the boundary particles' regions do not matter since we do not calculate any physics for them, just interpolate their quantities from their respective parent particle in L. 
+We are using the same constants for feedback force, pressure force interpolation, relax time and region conditions, maybe? Maybe this should be mentioned in some kind of implementation section?
 
 Special prediction correction loop for the H simulation that does not calculate physics on boundary particles and has higher allowed density error for relaxed particles. Also applies to local corrections. 
 
 Also, since we are expecting the relaxed particles to not behave physically correct we don't allow them to add their block to the error region. However, if an active particle and a relaxed particle is in the same block and the active particle is erroneous, that block will be marked and added to the error region and all particles within it (including the relaxed) will be further corrected. 
 
-The halving of minor steps happen if one simulation, L or H, runs more than 6 local correction loops, according to Goswami. We allow the minor steps to reset only if both simulations manages to run less than 6 local corrections for 10 major steps. (kanske nåt om time integration, att partiklar forwardas även fast det är fel, vet inte om det är viktigt?)
+The halving of minor steps happen if one simulation, L or H, runs more than 6 local correction loops, according to Goswami. We allow the minor steps to reset only if both simulations manages to run less than 6 local corrections for 10 major steps. (kanske nåt om time integration, att partiklar forwardas även fast det antagligen är fel, vet inte om det är viktigt?)
 
-We found that the large neighborhood search was unnecessary for our implementation and the simulation got the same results but ran 30\% faster. 
+We found that the large neighborhood search was unnecessary for our implementation and the simulation got the same visual results but ran 30\% faster. 
 
 %%%%%%%%
 \subsection{Neighborhood search}
 %%%%%%%%
-\textit{How neighborhood search is done, if any changes.}
+{\color{red}How neighborhood search is done, if any changes.}
 We are using the same neighborhood search as Goswami, except for the large neighbor search, and the index sort in "A parallel SPH implementation on multi-core CPUs", Ihmsen 2010. 
 
-%%%%%%%%
-\subsection{Dynamically isolate the high resolution region}
-%%%%%%%%
-\textit{How we isolate H. Floodfilling.}
-We are not doing this, because of time limitations
-
+\subsection{High resolution determination}
 
 
 \end{document}

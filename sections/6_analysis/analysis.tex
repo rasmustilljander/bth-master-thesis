@@ -1,0 +1,43 @@
+\documentclass[../../main.tex]{subfiles}
+\begin{document}
+
+
+% Results
+% Analysis
+
+
+%%%%%%%%
+\section{Tables everywhere!}
+\textit{Tables, illustrations and images all depicting the difference in result from the different. }
+%%%%%%%%
+\begin{table}[h]
+\begin{tabular}{|l|l|l|l|l|}
+\hline
+\rotatebox[origin=c]{270}{Gallery}  & \rotatebox[origin=c]{270}{DoubleDamBreak} &   &  &  \\ \hline
+x       &                & Something  & Something &  \\ \hline
+        & x           &   &  &  \\ \hline
+        &                & x &  &  \\ \hline
+\end{tabular}
+\end{table}
+
+%%%%%%%%
+\section{Important text to explain our results.}
+\textit{}
+%%%%%%%%
+
+\textit{What does our data mean?}
+
+
+%%%%%%%%
+\section{Speedups}
+%%%%%%%%
+\textit{Why do we a speed up? Which part is faster (table with timers for specific parts)?}
+
+
+%%%%%%%%
+\section{Specific speedup}
+%%%%%%%%
+\textit{Why is the combined technique faster then two-scale, but not necessarily faster than RTS?}
+It is all about the region determination step in two-scale algorithm. As one chooses the region for the high resolution it can be chosen to be more of less effective. However, because the region determined is directly coupled to the complexity of the scene this is no trivial decision. One can choose, performance wise, very expensive regions for high resolution. It can be illustrated by the following scenario:
+An arbitrary sized scene is simulated with the two-scale resolution algorithm. To correctly adhere to the algorithm a high resolution area has to be determined. In this particular example the high resolution area is determined as the entire resolution. As an result we now have two simulations running to illustrate the same fluid. This potentially becomes very expensive and thus takes longer to simualte than RTS. This is true for the two-scale resolution algorithm, but because of the nature of the algorithm it is also true for the combined algorithm. In contrast, for the RTS algorithm it is less likely to make unique assumptions per scene that affects performance.  
+\end{document}

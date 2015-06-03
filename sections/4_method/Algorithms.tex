@@ -1,0 +1,76 @@
+\documentclass[../../main.tex]{subfiles}
+\begin{document}
+\label{la:1}
+\label{la:2}
+\label{la:3}
+\label{la:4}
+
+\begin{algorithm}
+    \caption{Combined}
+    \label{alg:twoscale}
+    \begin{algorithmic}[1]
+        \While{animating}
+            \State PreMinorStepsRTS for L
+            \State Determine Regions
+            \State PreMinorStepsRTS for H
+            \For{\textit{nRTSMinorSteps}}
+                \State MinorStepRTS for L
+                \State InterpolateQuantities
+                \For{\textit{nTwoScaleSubSteps}}
+                  \State MinorStepRTS for H
+                  \State Advect Boundary
+                \EndFor
+            \State InterpolateFeedbackInfo
+            \EndFor
+            \State UpdateParentParticle
+            \State Interpolate feedback information from \textit{{\texorpdfstring{H\textsubscript{active}}{H active}}} onto \textit{L}
+        \EndWhile
+   \end{algorithmic}
+\end{algorithm}
+
+\begin{algorithm}
+    \caption{Pre-MinorStep}
+    \label{alg:twoscale}
+    \begin{algorithmic}[1]
+    \State Update Neighborhood Grid
+    \State Compute Density
+    \State Compute External Forces
+    \State Find Max Velocity and Force per block
+    \State Calculate Block Activity Level
+    \State Find Observed blocks
+   \end{algorithmic}
+\end{algorithm}
+
+\begin{algorithm}
+    \caption{Minor Step}
+    \label{alg:twoscale}
+    \begin{algorithmic}[1]
+    \If{minorStep != 1} 
+        \State Conditional Update Neighborhood Grid 
+    \EndIf 
+ %   \item[]
+    \State Set Max Vel And Force Per Block
+ %   \item[]
+    \State Upgrade Block Activity Level
+ %   \item[]
+    \If{minorStep != 1} 
+        \State Conditional Update Density 
+        \State Conditional Update ExtForces 
+    \EndIf 
+ %   \item[]
+    \State Reset Pressure And Pressure Forces
+ %   \item[]
+    \State Prediction Correction Step
+ %   \item[]
+    \State LOGIC FOR HALF/FULL MAJOR STEP
+ %   \item[]
+    \State Update Velocity And Position For Combined
+ %   \item[]
+    \State Update Validity And To Compute
+ %   \item[]
+    \State Cull Observed Blocks
+ %   \item[]
+	\State Cull Error Blocks
+   \end{algorithmic}
+\end{algorithm}
+\end{document}

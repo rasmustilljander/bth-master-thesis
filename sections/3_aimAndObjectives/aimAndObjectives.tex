@@ -1,0 +1,24 @@
+\documentclass[../../main.tex]{subfiles}
+\begin{document}
+
+While it is possible to simulate large bodies of fluid in real-time using the parallel processing power of the GPU \cite{macklin2013position,goswami2010interactive}, solutions for the CPU are still not efficient enough[XX??]. However, simulating fluids in such a way is a progressive field of study and the subject of numerous research papers[XXX]. Furthermore, as can be read in \hyperref[ch:Related Work]{Related Work}, multiple paths with various approaches have been explored with the purpose to decrease the computational calculations required. Which in turn brings us directly to our first research question.
+
+\begin{displayquote}
+{\large \textbf{Q1.}} 
+Is it viable to construct a combined technique based on the region time stepping, that introduces an elevation effect on the time step, with the two-scale resolution, which lowers particle count.
+\end{displayquote} 
+% Borde inte vara "viable", det skulle innebära att vi letar efter något speciellt för att kunna _godkänna_ den nya algoritmen
+% I våran projektplan så var frågan "is is possible /../"
+% Gapet ligger ju i att kombinera dessa två och se om något fortsättning är intressant
+% Det i så fall är väl definitionen av viable?
+In order to answer this question we implemented both the two-scale algorithm as well as the regional time stepping algorithm. It was then further continued by the implementation of a combined algorithm. 
+
+In order to be viable as
+of the proposed algorithm 
+
+\begin{displayquote}
+{\large \textbf{Q2.}} Will a combined technique simulate large body of fluids faster compared to its two base techniques and PCISPH.
+\end{displayquote}
+This question is tightly coupled to the first one, as being faster is the definition of being viable. To answer this question we also implemented PCISPH and define test scenarios. Test were then performed using all four techniques with varying parameters.
+
+\end{document}
