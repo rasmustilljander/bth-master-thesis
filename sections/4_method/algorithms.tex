@@ -11,19 +11,19 @@
     \begin{algorithmic}[1]
         \While{animating}
             \State pre-minorstep for L
-            \State determine H-Region
+            \State determine H-region
+            \State add/remove H-particles
             \State pre-minorstep for H
             \For{\textit{nRTSMinorSteps}}
                 \State minorstep for L
-                \State interpolate Quantities
+                \State interpolate quantities
                 \For{\textit{nTwoScaleSubSteps}}
                   \State minorstep for H
                   \State advect boundary
                 \EndFor
-            \State interpolate feedback Info
+            \State interpolate feedback info
             \EndFor
             \State update parent particle
-            \State interpolate feedback information from \textit{{\texorpdfstring{H\textsubscript{active}}{H active}}} onto \textit{L}
         \EndWhile
    \end{algorithmic}
 \end{algorithm}
@@ -46,7 +46,7 @@
     \label{alg:twoscale}
     \begin{algorithmic}[1]
     \If{minorStep != 1} 
-        \State conditional update neighborhood grid 
+        \State conditional update neighborhood 
     \EndIf 
  %   \item[]
     \State set max velocity and force per block

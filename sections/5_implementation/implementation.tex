@@ -15,8 +15,13 @@ Processor Intel Core i7-2700K (3.5GHz, 8 cores) (H470-0004)
 In our tests we noticed that getNeighborsLarge from RTS was very expensive, we also noticed that we got very similar and resonable results. As thus we completly disregarded that part for our implementation of RTS. It was also left out in our combined technique. %Bild på detta ?
 
 
+We are using the same constants for feedback force, pressure force interpolation, relax time and region conditions, maybe? 
+
+
 We changed the velocity relaxation of particles by limiting the adding velocity instead of the total. The beta value is set to [VALUE] from experiments. 
 
 For the sake of simplicity and because of time restraints we chose not to implement the surface detection algorithm.
+
+The global time step is reverted if the simulation runs without exceeding 6 global correction iterations for 10 or more global time steps. 
 
 \end{document}
