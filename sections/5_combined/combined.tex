@@ -1,0 +1,98 @@
+\documentclass[../../main.tex]{subfiles}
+\begin{document}
+
+% Implementation differences
+
+
+%%%%%%%%
+\section{Our combined method}
+%%%%%%%%
+For our combined algorithm we had to find a way to fit the two-scale and RTS together. We found that the simplest way to do that was to calculate region membership on blocks in both the L and the H-simulation. Since both simulations shares many algorithm steps, we decided to encapsulate some parts of the RTS algorithm into two steps: pre-minor step and minor step. The pre-minor step contains calculations that are only required once per major step, for instance updating neighborhood grid and determining region membership. After performing the pre-minor step for the L-simulation we determine where the H-region is and add or remove H-particles, depending on their parents' position. The pre-minor step for H is performed in a likewise manner to L (Behövs det sista?) and then the minor step loop is entered. 
+
+\begin{algorithm}[h]
+    \caption{Combined Technique}
+    \label{alg:combined:main}
+    \begin{algorithmic}[1]
+        \While{animating}
+            \State pre-minor step for L
+            \State determine H-region
+            \State add/remove H-particles
+            \State pre-minor step for H
+            \For{\textit{nRTSMinorSteps}}
+                \State minor step for L
+                \State interpolate quantities
+                \For{\textit{nTwoScaleSubSteps}}
+                  \State minor step for H
+                  \State advect boundary
+                \EndFor
+            \State interpolate feedback info
+            \EndFor
+            \State update parent particle
+        \EndWhile
+   \end{algorithmic}
+\end{algorithm}
+
+
+\begin{algorithm}[h]
+    \caption{Pre-Minor step}
+    \label{alg:combined:preminorstep}
+    \begin{algorithmic}[1]
+    \State update neighborhood grid
+    \State compute density
+    \State compute external forces
+    \State find max velocity and force per block
+    \State calculate block activity level
+    \State Expand $\Re$$_1$, $\Re$$_2$
+    \State find observed blocks $\Re$$_o$
+   \end{algorithmic}
+\end{algorithm}
+
+Inside the minor step loop we use our minor step equivalent to the two-scales \textit{compute physics}. The minor step contains most things needed to calculate new positions for all particles. Because some parts are calculated in both the pre-minor and the minor step, they can be skipped the first time after each pre-minor step. In algorithm \ref{alg:combined:minorstep} the lines 1 through 5 are already correctly calculated the first time they are encountered in each major step. 
+
+\begin{algorithm}[h]
+    \caption{Minor Step}
+    \label{alg:combined:minorstep}
+    \begin{algorithmic}[1]
+    \State conditional update neighborhood 
+    \State set max velocity and force per block
+    \State upgrade block activity level
+    \State conditional update density 
+    \State conditional update external forces 
+    \State reset pressure and pressure forces
+    \State prediction correction step
+    \State update velocity and position
+    \State update validity (Algorithm \ref{alg:validity})
+    \State cull observed blocks
+	\State cull error blocks
+   \end{algorithmic}
+\end{algorithm}
+
+The prediction correction step is not changed much compared to the one in RTS, with the exception of relaxed particle handling. The relaxed particles are allowed a higher density error than the active particles (active bra?) so we calculate the max and average density error separately. Also, since we are expecting the relaxed particles not to behave physically correct we don't allow them to add their block to the error region. However, if an active particle and a relaxed particle is in the same block and the active particle is erroneous, their block will be marked and added to the error region and all particles within it (including the relaxed) will be further corrected. 
+
+After the prediction correction step we update all particle's positions and validity variable. We also cull any blocks which were previously observed or marked as error but no longer needs to be. Only blocks that were originally observed blocks are kept between minor steps, the others are caused by error blocks which we always cull. We keep the originally observed blocks because the boundaries between the regions usually do not change inside a major step and it is unnecessary to recalculate the observed blocks every minor step. 
+
+When the L-simulation has executed the minor step we interpolate its particle's quantities to use with the advection of the boundary particles in H. We then execute the minor step for H, just like in two-scale the H-particles has half the diameter of the L-particles, and therefore requires half the time step and twice the physics calculations. (Kanske skriv om eftersom detta redan borde vara förklarat i two-scale) The minor step for H is performed in the same way as for L and the advection just forwards every boundary particle in time using the interpolated values from their parents. 
+
+Interpolating feedback info and updating parent particle is performed in the same way as in the two-scale method. For the feedback info, each parent get an average velocity from all its children and uses it to calculate a feedback force. For the parent update every H-particle receive its nearest L-particle as a parent. 
+
+The determination of the H-region and the adding and removing of particles is tightly coupled and since changing the number of particles requires the neighborhood grid to update, we chose to place those steps outside the minor loop. Update parent was placed outside for the same reason; if an H-particle gets a parent which is outside the H-region, the child would have to be removed. Updating the parent particle only every major step instead of every minor step gave us no stability issues or visual artifacts. 
+
+
+%%%%%%%%
+\subsection{Implementation differences}
+%%%%%%%%
+In our tests we noticed that the RTS' neighbor search for R1 particles was very expensive. We found that the using the same neighbor search as for the other regions produced equally good visual results at a considerably shorter time. Therefore, we chose to not use the expanded neighbor search for neither RTS nor our combined method. 
+
+We also noticed that in our combined tests no particle ever entered the local correction step used in RTS. Since no local corrections were made, the simulation never halved the major time step, so we disregarded that logic. This gave us no discernible speedup but it simplified the algorithm. 
+
+The constants used for the two-scale algorithm are the same in our implementation; relax time, $\beta$-value for feedback force, and the higher allowed density error for the relaxed particles. However, for the pressure force interpolation we modified the velocity limitation; instead of limiting the final velocity of the particle, we only limit the velocity calculated by the pressure force that iteration. This gave us a much smoother transition from the relaxed state, with fewer sudden density changes. The $\beta$-value for the force interpolation was nevertheless experimentally set to 0.05, same as in the original paper. 
+
+The density correction scheme that Goswami used for the prediction-correction loop proved to work well, so we adopted it, together with the number of activity levels which was set to four. 
+
+
+For the sake of simplicity and because of time restraints we chose not to implement the surface detection algorithm. % behöver det här ens nämnas?
+
+
+%For R1 particles, i.e. fast particles, a larger radius is used when calculating neighbors, using two blocks instead of one. This increases computation time a lot but is apparently necessary for stability and the R1 particles are few so it is OK.
+
+\end{document}
