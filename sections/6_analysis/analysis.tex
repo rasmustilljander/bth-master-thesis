@@ -1,33 +1,47 @@
 \documentclass[../../main.tex]{subfiles}
 \begin{document}
-
+\tracingall
 
 % Results
+    % Tables
+    % Comparable images
 % Analysis
-
-% Man kanske vill ha något här eller annanstans om andra sätt man kan kombinera two-scale och RTS, typ ha H-regions endast i R1 och R2 osv. 
-
-Vi måste skriva hur stort time step vi har någonstans
-
-%%%%%%%%
-\section{Specific speedup}
-%%%%%%%%
-\textit{Why is the combined technique faster than two-scale, but not necessarily faster than RTS?}
-It is all about the region determination step in two-scale algorithm. As one chooses the region for the high resolution it can be chosen to be more of less effective. However, because the region determined is directly coupled to the complexity of the scene this is no trivial decision. One can choose, performance wise, very expensive regions for high resolution. It can be illustrated by the following scenario:
-An arbitrary sized scene is simulated with the two-scale resolution algorithm. To correctly adhere to the algorithm a high resolution area has to be determined. In this particular example the high resolution area is determined as the entire resolution. As an result we now have two simulations running to illustrate the same fluid. This potentially becomes very expensive and thus takes longer to simulate than RTS. This is true for the two-scale resolution algorithm, but because of the nature of the algorithm it is also true for the combined algorithm. In contrast, for the RTS algorithm it is less likely to make unique assumptions per scene that affects performance.  
+    % What does out data mean
+    % Why do we get the results we do?
 
 
 %%%%%%%%
-\subsection{Implementation }
+\subsection{Implementation}
 %%%%%%%%
-During our implementation we used the visual C++ 12.0 compiler on Windows 8.1 OS and compiled towards 64-bit. Tests were performed on computers with 16 gigabyte of memory with a Intel Core i7-2700K (3.5 GHz, 8 cores) and were multithreaded using OpenMP. 
+During our implementation we used the visual C++ 12.0 compiler on Windows 8.1 OS and compiled towards 64-bit. Tests were performed on computers with 16 gigabyte of memory with an Intel Core i7-2700K (3.5 GHz, 8 cores) and were multithreaded using OpenMP. 
 
-Processor Intel Core i7-2700K (3.5 GHz, 8 cores) (H470-0004)
+In all tests we used static boundary particles for walls and collision objects. % Kanske någon motivation eller nåt mer här iaf
+
+
+%%%%%%%%
+\section{Results}
+%%%%%%%%
+%\textit{Why is the speedup what it is?}
+
+As can be seen in table xx, our combined method is not as fast as one might have expected. However, our two-scale implementation has not given the speedup over PCISPH as shown in Solenthalers paper. We believe this could be caused by a couple of reasons(gief annat ord plox). Firstly, the resolution factor in our implementation is only 2, whereas in the two-scale paper it is in some tests set to 4. A resolution factor of 4 gives L-particles which are 64 times larger than the H-particles, reducing the total number of particles significantly. Secondly, our scenes and specifically the determination of the H-regions differs a bit. Our regions are up to 50\% of the whole simulation domain, and Solenthalers seem to be around 25\% in most of the scenes. Because of the amount of active particles, the overhead from certain calculations (create/delete H-particles, boundary handling, parent update) might outweigh the benefits of the two-scale method. 
+
+The RTS algorithm is not as sensitive to scene configuration as the two-scale algorithm. Therefore, we see the same speed up in our combined algorithm as the RTS has over PCISPH. 
+
+Jag hoppas att vi kan peka på graferna med avg time per step för att visa att RTS är bättre på scener med mycket action. 
+
+
+!!!!!!!! Joel ska ladda upp filmer på youtube och eventuellt titta ut bilder. Även normalisera graferna för time per iteration + gör grafer för numHparticles !!!!!!!!
+
 
 %%%%%%%%
 \subsection{Discussion}
 %%%%%%%%
 
-Two-scale paper uses resolution factor 4 which gives them a higher speedup probably, alos they use a smaller H-region. 
+%Many R1s just around the border. 
+During our implementation we had some difficulties with the boundary and relaxed H-particles. It is possible that there still exists some problems which causes the particles to get incorrect densities which in turn requires more iterations in the prediction-correction loop. The fact that most of the $\Re_1$ regions exist near the border further supports this theory. 
+
+Cubic scenes might give more static particles. 
+
+Two-scale paper uses resolution factor 4 which gives them a higher speedup probably, also they use a smaller H-region. 
 
 \end{document}
