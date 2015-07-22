@@ -2,35 +2,29 @@
 \begin{document}
 \tracingall
 
-% Wrap uo, what did we do?
-% Answer research questions, what questions did we ask? 
+% Wrap up, what did we do?
+% Answer research questions, what questions did we ask? Yes, inconclusive
 % Results, what were our results for these questions?
 % Future work, how can this be expaned
 
-\textit{Summary. What have we done, what did we acheive, why did we acheive this. What factors was important, specific conditions such as language, OS, frameworke and machine.}
-We have combined two different techniques that simulates fluids, which both focus on reducing simulation times, and have successfully utilized both techniques and reduced simulation times even further.
 
-This allows for a fewer amount of particles to represent a substantially larger area than would be possible without resizing them. Thus the simulation does not need as many particles which reduces the computation time. The region of higher resolution can be set where the details of the simulation is more important, like the surface, the view frustum, or where obstacles are.
+We have presented a combined algorithm based on the two algorithms regional time stepping and two-scale resolution. Seeing as our simulations run and the visual results do not differ noticeably from the base algorithms, the answer to our first research question is: yes, it is possible to construct a combined algorithm. 
 
+However, our implementation of the two-scale algorithm seem to give incorrect results and our combined algorithm utilizes the same implementation. Although we see a slight speed up, we can not with certainty answer our second research question as the results undoubtedly would change should the two-scale algorithm give better results. 
+
+% Känns som att vi vill ha nåt mer här, någon ordentlig slutsats på nåt sätt?
 
 %%%%%%%%
 \section{Future work}
 %%%%%%%%
-\textit{How can this be expanded in the future? What implications does this have on existing work? Could it be combined with any already technique?}
-Surface detection thingy. 
-Usage of general purpose graphical units (GPU) could further be used to speedup. 
-We have presented a method where we effectively split a fluid simulation into two distinct parts, the low resolution set L and the subset of L that represents the high resolution part H. The low resolution uses particles with a smaller number or particles.
-Moreover, we continue by breaking these sets into three-dimensional regions, also called blocks, in such a way that each particle exist in exactly one block. Each block then calculates the smallest time-step required based on the attributes of every particle in the block. This is an attempt to ensure the highest possible time-step for that block, and thus its particles. 
-%This is done twice per frame, once for the high resolution and once for the low resolution set.
 
-The method presented in this paper could also be expanded using the Graphic Processing Unit(GPU) rather than the Central Processing Unit(CPU). As mentioned in \cite{goswami2014regional} the blocks can be treated as parallelization units for computing the physics of particles within, as also implemented in \cite{goswami2010interactive}.
+An obvious continuation would be to try and reproduce Solenthalers results with the two-scale implementation. This might be as simple as building better suited scenes or implementing support for a resolution factor of 4, or it might require a whole re-implementation of the algorithm. 
 
-There is another point of view that could be explored. Rather than combining the two methods as shown in this paper it could also be interesting to explore the possibility to take advantage of differently sized particles in different regions.
+Regardless of the two-scale implementation, the algorithm presented in this paper could also be expanded using the Graphic Processing Unit(GPU) rather than the Central Processing Unit(CPU). As mentioned by \citet{goswami2014regional} the blocks can be treated as parallelization units for computing the physics of particles within, as also implemented by \citet{goswami2010interactive}.
 
-To further explore the possibility to perform more complex calculations for determining the high resolution area for particles in L could be interesting. In this paper we manually determines, prior to the simulation, one single 3-dimensional cuboid which we use to performs simple location based queries against. Taking this to the next level and explore the possibility with either surface detection or using a view frustum to define high resolution areas could be an interesting next step. 
+To further explore the possibility to perform more complex calculations for determining the high resolution area for particles in L could be interesting. In our algorithm we manually determine, prior to the simulation, one single 3-dimensional cuboid which we use to perform simple location based queries against. However, as suggested by \citet{solenthaler2011two}, exploring the possibilities with either surface detection or using a view frustum to define high resolution areas could be an interesting next step. 
 
-Another interesting idea would be to dynamically set the H area to the R1 and R2 since that is probably where the most action will be, but that will introduce very many boundary regions.
+There is another point of view that could be explored. Rather than combining the two methods as shown in this paper it could also be interesting to explore the possibility to take advantage of differently sized particles in different regions. For instance letting $\Re_1$ and $\Re_2$ be H-regions or even having one particle size per region level. 
 
-% Man kanske vill ha något här eller annanstans om andra sätt man kan kombinera two-scale och RTS, typ ha H-regions endast i R1 och R2 osv. 
 
 \end{document}
