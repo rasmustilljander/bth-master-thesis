@@ -58,12 +58,6 @@ Since a particle does not move very far every frame, checking its current parent
 
 The L-particles in the active region receive a feedback force from the smaller particles so that the different fluid simulations do not diverge significantly. In addition, simulations with larger particles typically experience more dampening effects which is mitigated by the feedback from the smaller particles in the H-region. The feedback force is calculated from the average velocity of all children to each particle in the H-region. 
 
-\subsection{Image Text 1}
-The resolution factor can be different per scene, however, in our implementation we have chosen the resolution factor of 2 so that the diameter of a particle in H is half the diameter of a particle in L. This means that L-particles are 8 times larger, in volume, than the H-particles.
-
-\subsection{Image Text 2}
-/../ particles will be advected for as long as they are in a region with width Support radius around the active region. We do not calculate physics on them since they are only there to fill up the neighborhood of the active particles.
-
 %%%%%%%%
 \section{Regional time stepping}
 %%%%%%%%

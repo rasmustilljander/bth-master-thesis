@@ -8,11 +8,12 @@
 % Future work, how can this be expaned
 
 
-We have presented a combined algorithm based on the two algorithms regional time stepping and two-scale resolution. Seeing as our simulations run and the visual results do not differ noticeably from the base algorithms, the answer to our first research question is: yes, it is possible to construct a combined algorithm. 
+We have presented a combined algorithm based on the two algorithms regional time stepping and two-scale resolution. Seeing as we can run complete simulations and the visual results do not differ noticeably from the base algorithms, the answer to our first research question is: yes, it is possible to construct a combined algorithm. 
 
 However, our implementation of the two-scale algorithm seem to give incorrect results and our combined algorithm utilizes the same implementation. Although we see a slight speed up, we can not with certainty answer our second research question as the results undoubtedly would change should the two-scale algorithm give better results. 
 
-% Känns som att vi vill ha nåt mer här, någon ordentlig slutsats på nåt sätt?
+Overall, our combined method has potential, but it is restricted by scene configuration and H-region selection. However, for optimized scenes, the speed up probably makes up for the time spent configuring the scenes and the algorithms relative complexity compared to RTS and two-scale resolution. 
+
 
 %%%%%%%%
 \section{Future work}
