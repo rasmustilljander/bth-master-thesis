@@ -17,7 +17,7 @@
 %\subsection{The algorithm}
 %%%%%%%%
 
-For our combined algorithm we had to find a way to fit the two-scale and RTS algorithms together. By an iterative process which included some trial and error we found that they could be combined by computing region membership for blocks in both the L and the H-simulation. Since both simulations shares many algorithm steps, we decided to encapsulate some parts of the RTS algorithm into two steps: \textit{pre-minor step} and \textit{minor step}. The pre-minor step contains calculations that are only required once per major step, for instance updating neighborhood grid and determining region membership. After performing the pre-minor step for the L-simulation we determine where the H-region is and add or remove H-particles, depending on their parents' position. The pre-minor step for H is performed in a likewise manner to L and then the minor step loop is entered. 
+For our combined algorithm we had to find a way to fit the two-scale and RTS algorithms together. By an iterative process which included some trial and error we found that they could be combined by computing region membership for blocks in both the L and the H-simulation. Since both simulations share many algorithm steps, we decided to encapsulate some parts of the RTS algorithm into two steps: \textit{pre-minor step} and \textit{minor step}. The pre-minor step contains calculations that are only required once per major step, for instance updating neighborhood grid and determining region membership. After performing the pre-minor step for the L-simulation we determine where the H-region is and add or remove H-particles, depending on their parents' position. The pre-minor step for H is performed in a likewise manner to L and then the minor step loop is entered. 
 
 \begin{algorithm}[h]
     \caption{Combined Technique}
@@ -48,9 +48,9 @@ For our combined algorithm we had to find a way to fit the two-scale and RTS alg
     \label{alg:combined:preminorstep}
     \begin{algorithmic}[1]
     \State update neighborhood grid
-    \State compute density
-    \State compute external forces
-    \State find max velocity and force per block
+    \State compute density $\rho$
+    \State compute external forces \textit{F}$^{ext}$
+    \State find max velocity \textit{v} and force \textit{F} per block
     \State calculate block activity level
     \State Expand $\Re$$_1$, $\Re$$_2$
     \State find observed blocks $\Re$$_o$
@@ -71,14 +71,14 @@ Because of the way $\Delta$t$_H$ and $\Delta$t$_L$ correlates (see section two s
     \begin{algorithmic}[1]
     \If {nRTSMinorSteps != 1} 
         \State conditional update neighborhood 
-        \State set max velocity and force per block
+        \State set max velocity \textit{v} and force \textit{F} per block
         \State upgrade block activity level
-        \State conditional update density 
-        \State conditional update external forces
+        \State conditional update density $\rho$
+        \State conditional update external forces \textit{F}$^{ext}$
     \EndIf
-    \State reset pressure and pressure forces
+    \State reset pressure \textit{p} and pressure forces \textit{F}$^{p}$
     \State prediction correction step
-    \State update velocity and position
+    \State update velocity \textit{v} and position \textit{x}
     \State update validity (Algorithm \ref{alg:validity})
     \State cull observed blocks
 	\State cull error blocks

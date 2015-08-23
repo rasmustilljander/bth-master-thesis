@@ -2,15 +2,9 @@
 \begin{document}
 \tracingall
 
-% Two-scale
-    % intro
-    % chosing a subset
-    % L vs H particlesize
-    % Parent particle and state (Advection etc)
-    % Parent update
-    % Feedback force
-    
-    
+
+Our algorithm is based on the two algorithms two-scale resolution and regional time stepping. In this chapter we will explain these methods and why they improve the simulation times. 
+
 %%%%%%%%
 \section{Two-scale resolution}
 %%%%%%%%
@@ -18,10 +12,19 @@ The two-scale resolution technique uses two separate simulations to simulate a b
 
 By using larger, and thus fewer, particles for the entire simulation, the total computational time is reduced. Although this speedup is desirable, it can in complex scenes introduce instability and greatly affect the visual result. By identifying the regions where large particles fail, we can make use of smaller particles to maintain visually pleasing results. Since the resolution of the particles in those regions is higher than the rest of the fluid, they are are called H-regions.
 
-Identifying an H-region can be done with multiple approaches. It can be a predetermined region where a user have observed complex movement, like obstacles where collisions occur, see image XX. Another option is to use more dynamic approaches, such as using the view frustum; use larger particles for the part of the simulation that is currently not viewed by the observer. A third approach assumes that the visual results is most critical at the surface, which can therefore be determined as the H-region using surface detection and flood fill methods.
+Identifying an H-region can be done with multiple approaches. It can be a predetermined region where a user has observed complex movement, like obstacles where collisions occur, see image \ref{fig:complexarea}. Another option is to use more dynamic approaches, such as using the view frustum; use larger particles for the part of the simulation that is currently not viewed by the observer. A third approach assumes that the visual results is most critical at the surface, which can be determined as the H-region using surface detection and flood fill methods.
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=\textwidth]{ComplexArea.jpg}
+    \caption[Complex scene with user defined H-region]{A complex scene with a user defined H-region. The red particles represents the boundary region, thus the border between the L and the H-region. }
+    \label{fig:complexarea}
+\end{figure}
 
 % Skriv om detta för så att vi beskriver resolution factor istället för en hårdkodad tvåa överallt
-Each particle in the H-simulation, an H-particle or active particle, has half the diameter of an L-particle and due to instability risks, the H-simulation requires half the time step of the L-simulation. Because of this, H needs to calculate physics twice for every L physics calculation. 
+Each particle in the H-simulation, an H-particle or active particle, has half the diameter of an L-particle and due to instability risks, the H-simulation requires half the time step of the L-simulation. To prevent the H-simulation from lagging behind, we perform two physics calculations (and position forwarding) for H every time step. 
+%To still advance as far in time as the L-simulation, the H-simulation performs two physics calculations.
+%Because of this, H needs to calculate physics twice for every L physics calculation. 
 
 An active particle has exactly one parent particle from L, which is computed by finding the closest L-particle. On the other hand, an L-particle does not have a limit of number of children, but can only act as a parent as long as it occupies a position within the H-region. Only L-particles may act as a parent, and only H-particles may be created as children. The parent and children relationship is used to tie the simulations together. 
 
@@ -51,7 +54,7 @@ A small area surrounding the H-region is defined as the boundary region (see fig
 % Explain why particles need full neighborhood somwhere
 Because the H-particles require a full neighborhood for the simulation to be correct, the particles in the boundary region do not calculate neighborhoods or any physics. Instead the H-particles within the boundary region are advected by the flow of L until they are deleted or the parent enters the H-region. This way the H-particles in the H-region has a satisfying neighborhood along the boundary without losing the flow of the fluid. 
 
-Furthermore, when a parent particle enters the H-region from the boundary region, its children enters what is called a relaxation period. This period exists because the particles coming from the boundary region may lie in a configuration which could cause sudden changes in density should they start calculating physics immediately. Therefore, the relaxed particles interpolates their quantities from advected values to physically correct values (Equation about relaxation?). 
+Furthermore, when a parent particle enters the H-region from the boundary region, its children enter what is called a relaxation period. This period exists because the particles coming from the boundary region may lie in a configuration which could cause sudden changes in density should they start physics calculations immediately. Therefore, the relaxed particles interpolates their quantities from advected values to physically correct values. 
 
 %An active particle's parent is decided by simply choosing the nearest particle in L. 
 Since a particle does not move very far every frame, checking its current parents neighbor for a closer particle typically suffices. When no particle is found within the range of an L-particles diameter from the active particle, we search the whole L-simulation for the closest particle. 
@@ -61,22 +64,32 @@ The L-particles in the active region receive a feedback force from the smaller p
 %%%%%%%%
 \section{Regional time stepping}
 %%%%%%%%
-In SPH particles with lower forces and velocities can have a higher time step without causing instabilities, since they move a shorter distance and are therefore less likely to end up in an unstable position. With the assumption that small parts of a fluid is subject to approximately the same forces, Goswami discretizes the whole fluid domain into blocks. Each blocks sides are twice as long as a particles diameter, thus they can contain only a small number of particles. By giving each block a specific \textit{activity level} based on the forces and velocities of the containing particles, areas of the fluid with more rapid movement can be given more computational power and regions with less movement can be given less, thus decreasing the total computational time. 
+%In SPH particles with lower forces and velocities can have a higher time step without causing instabilities, since they move a shorter distance and are therefore less likely to end up in an unstable position. 
+In conventional SPH methods, all regions of fluid are integrated with the same time step, even though different regions could actually be updated at different frequency depending on the velocities and forces in each region. With the assumption that small parts of a fluid is subject to approximately the same forces, Goswami discretizes the whole fluid domain into blocks. Each blocks sides are twice as long as a particles diameter, thus they can contain only a small number of particles. By giving each block a specific \textit{activity level} based on the forces and velocities of the containing particles, areas of the fluid with more rapid movement can be given more computational power (i.e. more calculations per frame) and regions with less movement can be given less, thus decreasing the total computational time. 
 
 The activity levels are called regions and there are \textit{n} of them, $\Re_1$ to $\Re_n$, where $\Re_1$ is the region with highest force or velocity. A block is assigned the highest activity level (that is, the lowest region number) for which it satisfies three equations based on the contained particles' maximum velocity and force, as well as the time step and a few coefficients. For more detail about these equations we refer to \citet{goswami2014regional}.
 
 % Expand R1 and R2. Observed blocks (Kanske flytta detta stycket till efter prediction correction?)
-Particles in $\Re_1$ and $\Re_2$ could have such velocities that they travel outside their blocks over one time step, therefore, those regions are expanded 4 layers of blocks. In addition, blocks bordering higher activity level blocks are marked as \textit{observed} blocks, $\Re_{ob}$, which are checked for density errors whenever the bordering region is corrected. This way we only have to check the density of blocks neighboring the erroneous blocks since they are the only ones in risk of becoming erroneous themselves. 
+Particles in $\Re_1$ and $\Re_2$ could have such velocities that they travel outside their blocks over one time step, therefore, those regions are expanded 4 layers of blocks. 
+% TODO : Give better explanation why we expand.
+In addition, blocks bordering higher activity level blocks are marked as \textit{observed} blocks, $\Re_{ob}$, which are checked for density errors whenever the bordering region is corrected. This way we only have to check the density of blocks neighboring the erroneous blocks since they are the only ones in risk of becoming erroneous themselves. 
 %This way, blocks which already had correct density which was not changed by neighboring blocks did not have to be checked. 
 
 % Major and minor steps
-One animation frame is called a \textit{major step} and it consists of \textit{n minor steps}, where \textit{n} is the number of activity levels. Each minor step forwards the simulation $\Delta$t$_b$ seconds, the base time step, thus each major step is $n\Delta$t$_b$ seconds long. The idea is that some computations only needs to be calculated once every major step, instead of every minor step. The neighborhood grid update, usually one of the most expensive parts of the PCISPH algorithm[ref?], is a prime example. 
+One animation frame is called a \textit{major step} and it consists of \textit{n minor steps}, where \textit{n} is the number of activity levels. Each minor step forwards the simulation $\Delta$t$_b$ seconds, the base time step, thus each major step is $n\Delta$t$_b$ seconds long. The idea is that some computations only needs to be calculated once every major step, instead of every minor step. The neighborhood grid update, usually one of the most expensive parts of the PCISPH algorithm, is a prime example. 
 
 % Conditional updates and toCompute
 Inside the minor steps, all physics computations is made, however, since slow moving particles probably have the same neighborhood for an entire major step it does not need to be re-computed every minor step. On the other hand, faster moving particles will need to keep their neighborhood and densities updated. We keep track of which particles should be updated using the variables \textit{compute} and \textit{validity} for each particle. Before the minor steps we set \textit{compute} to true and \textit{validity} to the particles activity level. The \textit{validity} variable is decremented each minor step and \textit{compute} is updated according to algorithm \ref{alg:validity}. In algorithm \ref{alg:rts:pcisph}, \textit{conditional} means that a particle will only update if its \textit{compute} variable is set to true. 
 
 % Prediction correction loop
-Seeing as the regions with low velocity and forces do not change the particle density rapidly, the number of iterations they require in the correction loop is lower than the amount the higher activity levels need. Therefore, the particles are corrected according to the scheme in (BILD), where \textit{e} denotes blocks that could not be corrected previous iteration, and will be corrected regardless of region membership. 
+Seeing as the regions with low velocity and forces do not change the particle density rapidly, the number of iterations they require in the correction loop is lower than the amount the higher activity levels need. Therefore, the particles are corrected according to the scheme in figure \ref{fig:schedule}, where \textit{e} denotes blocks that could not be corrected previous iteration, and will be corrected regardless of region membership. 
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=\textwidth]{schedule.png}
+    \caption{ }
+    \label{fig:schedule}
+\end{figure}
 
 % Half/full major step
 If some density error remains after the first 3 iterations, local corrections are performed on the blocks still marked as erroneous. If the average density error of the whole fluid is larger than a threshold, however, additional corrections are performed on all blocks. Should the correction loop fail to converge for a total of 6 iterations, the time step for the major steps is reduced to half, that is \textit{n}/2 $\Delta$t$_b$, because the neighbor grid update will happen more often and the simulation can therefore handle sudden density changes better. The time step is changed back to \textit{n}$\Delta$t$_b$ if the simulation has run 10 major steps with all correction loops exiting with every blocks density corrected. 
@@ -88,18 +101,18 @@ If some density error remains after the first 3 iterations, local corrections ar
     \begin{algorithmic}[1]
         \While{animating}
             \State update block neighborhood grid
-            \State find max velocity and force per block
+            \State find max velocity \textit{v} and force \textit{F} per block
             \State calculate block activity level
             \State expand region $\Re_1$, $\Re_2$
             \State find observed block $\Re_{ob}$
             \For{\textit{nRTSMinorSteps}}
                 \State conditional update neighborhood
-                \State conditional update density 
-                \State conditional update external forces 
-                \State reset pressure and pressure forces
-                \State prediction correction step
+                \State conditional update density $\rho$
+                \State conditional update external forces \textit{F}$^{ext}$
+                \State reset pressure \textit{p} and pressure forces \textit{F}$^p$
+                \State prediction correction step (Algorithm \ref{alg:rts:correction})
                 \State logic for half/full major step
-                \State update velocity and position
+                \State update velocity \textit{v} and position \textit{x}
                 \State update validity (Algorithm \ref{alg:validity})
             \EndFor
         \EndWhile
@@ -128,7 +141,25 @@ If some density error remains after the first 3 iterations, local corrections ar
     \caption{Density Correction RTS}
     \label{alg:rts:correction}
     \begin{algorithmic}[1]
-       \State Should be more things here...
+        \While{iter $\leq$ minIterations || density$_{error}$ $\geq$ max density$_{error}$}
+            \State predict velocity \textit{v} and position \textit{x}
+            \State predict density $\rho$ and pressure \textit{p}
+            \If{density error $\rho_{err}$ remains outside active regions}
+                \State update $\Re_{err}$ and $\Re_{ob}$
+            \EndIf
+            \If{particle has turn}
+                \State compute pressure force \textit{F}$^p$
+            \EndIf
+            \State iter++
+            \If{$\rho_{err}$ $\geq$ max $\rho_{err}$ \& iter $\geq$ 3}
+                \State minIterations++
+                \If{$\rho_{err}$ $\geq$ density threshold}
+                    \State perform extra global corrections
+                \Else
+                    \State perform local corrections on $\Re_{err}$
+                \EndIf
+            \EndIf
+        \EndWhile
    \end{algorithmic}
 \end{algorithm}
 
