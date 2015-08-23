@@ -21,10 +21,12 @@ In the field of computer graphics, realism has always been desired. When it come
 
 
 
-Eulerian, or grid-based, methods are a common choice for simulating fluids in the industry due to high coherence with the ground reality. In Eulerian methods physical quantities (pressure, density, velocity, and so on) of the fluid are defined on a grid and are then changed over time, but the grid remains fixed. This can be visualized as observing a river pass by while sitting at the riverbank; properties of constant points in the water change continuously, but the observed position remains the same. 
+Eulerian, or grid-based, methods are a common choice for simulating fluids in the industry due to high coherence with the ground reality. In Eulerian methods physical quantities (pressure, density, velocity, etc.) of the fluid are defined on a grid and are then changed over time, but the grid remains fixed. This can be visualized as observing a river pass by while sitting at the riverbank; properties of constant points in the water change continuously, but the observed position remains the same. 
 
 Lagrangian methods, as opposed to the Eulerian, move fluid mass around explicitly. The quantities are tied to a small part of the fluid which is tracked through the whole simulation. An analogy would be sitting in a boat and drifting down a river while watching the water around the boat. These methods are usually more computationally expensive because a parcel of fluid needs to be directly aware of its surroundings which requires expensive neighborhood calculations. On the other hand, they offer advantages on simulating small scale features like droplets and splashes, because the surface is not bound to a grid but is instead built from whichever particles are visible. In addition, Lagrangian methods conserve mass implicitly and do not need a separate scheme for mass conservation. 
 % Mention that the number of particles is very important for the computational cost
+
+Combinations of both Eulerian and Lagrangian methods usually use a grid in one part of the fluid, typically the bottom, and particles for the surface. 
 
 Whether a simulation method is Eulerian or Lagrangian, it is forwarded with a time step, a small value which is classically chosen globally and do not vary throughout the simulation. The time step determines how far the simulation is forwarded in each iteration. A larger time step forwards the flow of the fluid further, and thus decreases the required total computational time. Although a large time step seems desirable, choosing it too large could, for instance, cause two particles in the fluid to be forwarded in such a way that they occupy the same space. This can cause physically incorrect movement and displeasing visual results and is referred to as instability or unstable simulation.
 
@@ -36,7 +38,40 @@ It is, however, still desirable to have as large as possible value for the time 
 %%%%%%%%
 Our work is based on a variant of a Lagrangian method called \textit{Smooth Particle Hydrodynamics} (SPH), as the name implies SPH uses particles to simulate fluids. Each particle uses the distance to its neighbours to calculate a density value, this value is then used to compute the forward force and velocity. The new position is calculated by forwarding every particle's current position a small distance, using its velocity and a given time step. 
 
-% Insert basic SPH algorithm here
+\begin{algorithm}[h]
+   \caption{PCISPH}
+    \label{alg:pcisph}
+    \begin{algorithmic}[1]
+    \While  {animating}
+        \For {each particle \textbf{\textit{i}}}
+            \State find neighborhoods N$_i$(t)
+        \EndFor
+        \For {each particle \textbf{\textit{i}}}
+            \State compute forces \textbf{F}$^{v, g, ext}$(t)
+            \State initialize pressure \textit{p}(t) = 0.0
+            \State initialize pressure force \textbf{F}$^p$(t) = 0.0
+        \EndFor
+        \While {($\rho_{err}^*$(t+1) > $\eta$) || (iter < minIterations))}
+            \For {each particle \textbf{\textit{i}}}
+                \State predict velocity \textbf{v}$^*_i$(t+1)
+                \State predict position \textbf{x}$^*_i$(t+1)
+            \EndFor
+            \For {each particle \textbf{\textit{i}}}
+                \State predict density \textbf{$\rho$}$^*_i$(t+1)
+                \State predict density variation \textbf{$\rho$}$^*_{err}$(t+1)
+                \State update pressure \textit{p}$_i$(t) += \textit{f}($\rho$)$^*_{err}$(t + 1))
+            \EndFor
+            \For {each particle \textbf{\textit{i}}}
+                \State compute pressure force \textbf{F}$^p$(t)
+            \EndFor
+        \EndWhile
+        \For{each particle \textbf{\textit{i}}}
+            \State compute new velocity \textbf{v}$_i$(t+1)
+            \State compute new position \textbf{x}$_i$(t+1)
+        \EndFor
+    \EndWhile
+   \end{algorithmic}
+\end{algorithm}
 
 It is important to make sure that particles do not end up inside each other after an iteration, as doing so leads to undesirable visual effects and may even introduce instability. This limitation is called incompressibility and most liquids in real life are incompressible. The standard SPH method \citep{lucy1977numerical} does not enforce incompressibility so in an attempt to do so, Becker and Teschner introduced Weakly Compressible SPH (WCSPH) \citep{becker2007weakly}. While this method enforced near-incompressibility it came with a time step restriction which required a low time step to stay stable.
 
@@ -46,6 +81,7 @@ To further decrease total computation time Solenthaler also introduced the Two-s
 
 In contrast to reducing the number of particles, Regional Time Stepping by \citet{goswami2014regional} reduces computation time by using varying time steps based on the amount of movement in each area. Particles in areas with with small movements are assigned larger time step and are therefore not required to update as often. On the other hand, particles in areas with high movement are assigned a smaller time step. Thus less computational time is spent on the parts that exhibits less complexity.
 
+
 Seeing as the two-scale resolution and regional time stepping methods improve on two different aspects of the PCISPH technique, we propose a method combining the two. Our method, like two scale, uses two simulations both of which individually calculates what time steps to use in which regions, in the same way as RTS. 
 %Our method uses two simulations which calculates what time step to use in which regions individually.
 
@@ -54,4 +90,7 @@ Seeing as the two-scale resolution and regional time stepping methods improve on
 %\caption[Test image]{An image depicting the relationship between particle size and particle spacing.}     
 %\label{fig:spacing}
 %\end{figure}
+
+
+
 \end{document}
