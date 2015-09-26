@@ -2,22 +2,11 @@
 \begin{document}
 \tracingall
 
-% Combined
-    % Intro
-    % How we combined it
-    % Pre-minor / minor step
-    %
-
-
 %%%%%%%%
 \section{Our combined method}
 %%%%%%%%
 
-%%%%%%%%
-%\subsection{The algorithm}
-%%%%%%%%
-
-For our combined algorithm we had to find a way to fit the two-scale and RTS algorithms together. By an iterative process which included some trial and error we found that they could be combined by computing region membership for blocks in both the L and the H-simulation. Since both simulations share many algorithm steps, we decided to encapsulate some parts of the RTS algorithm into two steps: \textit{pre-minor step} and \textit{minor step}. The pre-minor step contains calculations that are only required once per major step, for instance updating neighborhood grid and determining region membership. After performing the pre-minor step for the L-simulation we determine where the H-region is and add or remove H-particles, depending on their parents' position. The pre-minor step for H is performed in a likewise manner to L and then the minor step loop is entered. 
+For our combined algorithm we had to find a way to fit the two-scale and RTS algorithms together. By an iterative process which included some trial and error we found that they could be combined by computing region membership for blocks in both the L and the H-simulation. Since both simulations share many algorithm steps, we decided to encapsulate some parts of the RTS algorithm into two steps: \textit{pre-minor step} and \textit{minor step}, resulting in algorithm \ref{alg:combined:main}. The pre-minor step contains calculations that are only required once per major step, for instance updating neighborhood grid and determining region membership, this can be seen in algorithm \ref{alg:combined:preminorstep}. After performing the pre-minor step for the L-simulation we determine where the H-region is and add or remove H-particles, depending on their parents' position. The pre-minor step for H is performed in a likewise manner to L and then the minor step loop is entered. 
 
 \begin{algorithm}[h]
     \caption{Combined Technique}
@@ -48,22 +37,22 @@ For our combined algorithm we had to find a way to fit the two-scale and RTS alg
     \label{alg:combined:preminorstep}
     \begin{algorithmic}[1]
     \State update neighborhood grid
-    \State compute density $\rho$
-    \State compute external forces \textit{F}$^{ext}$
-    \State find max velocity \textit{v} and force \textit{F} per block
+    \For {each particle \textbf{\textit{i}}}
+        \State compute density $\rho_i$ 
+    \EndFor
+    \For {each particle \textbf{\textit{i}}}
+        \State compute external forces \textbf{\textit{F}}$^{ext}_i$
+    \EndFor
+    \State find max velocity \textbf{\textit{v}} and force \textbf{\textit{F}} per block
     \State calculate block activity level
-    \State Expand $\Re$$_1$, $\Re$$_2$
-    \State find observed blocks $\Re$$_o$
+    \State Expand $\Re_1$, $\Re_2$
+    \State find observed blocks $\Re_o$
    \end{algorithmic}
 \end{algorithm}
 
-% Dont feel we need this part
-% Inside the minor step loop we use our minor step equivalent to the two-scales \textit{compute physics}. 
-
 The minor step contains most things needed to calculate new positions for all particles. A few steps are computed in both the pre-minor step and the minor step, these steps can thus be omitted the first time they are encountered in the minor loop. This can be seen in algorithm \ref{alg:combined:minorstep}. 
 
-% Denna kommande meningen är lätt förvirrande, men innehållet behövs.
-Because of the way $\Delta$t$_H$ and $\Delta$t$_L$ correlates (see section two scale REF) the minor steps for H is performed \textit{nTwoScaleSubSteps} times for every minor step for L. The conditional steps are only skipped the first time. 
+Because of the way $\Delta$t$_H$ and $\Delta$t$_L$ correlates (see section \ref{sec:twoscale}) the minor steps for H is performed \textit{nTwoScaleSubSteps} times for every minor step for L. The conditional steps are only skipped the first time. 
 
 \begin{algorithm}[h]
     \caption{Minor Step}
@@ -71,39 +60,47 @@ Because of the way $\Delta$t$_H$ and $\Delta$t$_L$ correlates (see section two s
     \begin{algorithmic}[1]
     \If {nRTSMinorSteps != 1} 
         \State conditional update neighborhood 
-        \State set max velocity \textit{v} and force \textit{F} per block
+        \State set max velocity \textbf{\textit{v}} and force \textbf{\textit{F}} per block
         \State upgrade block activity level
-        \State conditional update density $\rho$
-        \State conditional update external forces \textit{F}$^{ext}$
+        \For {each particle \textbf{\textit{i}}}
+            \State conditional update density $\rho_i$
+        \EndFor
+        \For {each particle \textbf{\textit{i}}}
+            \State conditional update external forces \textbf{\textit{F}}$^{ext}_i$
+        \EndFor
     \EndIf
-    \State reset pressure \textit{p} and pressure forces \textit{F}$^{p}$
+    \For {each particle \textbf{\textit{i}}}
+        \State reset pressure \textit{p$_i$} and pressure forces \textbf{\textit{F}}$^{p}_i$
+    \EndFor
     \State prediction correction step
-    \State update velocity \textit{v} and position \textit{x}
+    \For {each particle \textbf{\textit{i}}}
+        \State update velocity \textbf{\textit{v$_i$}} and position \textbf{\textit{x$_i$}}
+    \EndFor
     \State update validity (Algorithm \ref{alg:validity})
     \State cull observed blocks
 	\State cull error blocks
    \end{algorithmic}
 \end{algorithm}
 
-The prediction correction step has not been modified much compared to the one used in RTS, with the exception of handling relaxed particle. The relaxed particles are allowed a higher density error than the active particles, so we calculate separate max and average density error for particles in the relaxed state. Also, because of the nature of the relaxation interpolation\ref{TillEnEquationMaybe}, we do not expect relaxed particles to behave physically correct and thus they are not allowed to mark their blocks as erroneous. However, blocks that contain relaxed particles may still be marked as erroneous by active particles in the same block. The block would be added to $\Re_e$ and all particles, including the relaxed, in it would be further corrected.
+The prediction correction step has not been modified much compared to the one used in RTS, with the exception of handling relaxed particle. The relaxed particles are allowed a higher density error than the other H-particles, so we calculate separate max and average density error for particles in the relaxed state. Also, because of the nature of the relaxation interpolation, we do not expect relaxed particles to behave physically correct and thus they are not allowed to mark their blocks as erroneous. However, blocks that contain relaxed particles may still be marked as erroneous by other H-particles in the same block. The block would be added to $\Re_e$ and all particles in it, including the relaxed, would be further corrected.
 
-After the prediction correction step we forward all L-particles using $\Delta$t$_b$ and update their corresponding \textit{validity} variable. We also cull any blocks which were previously observed or marked as error but no longer needs to be. Only blocks that were originally observed blocks are kept between minor steps, the others are caused by error blocks which we always cull. We keep the originally observed blocks because the boundaries between the regions usually do not change inside a major step and it is unnecessary to recalculate the observed blocks every minor step. 
+After the prediction correction step we forward all L-particles using $\Delta$t$_b$ and update their corresponding \textit{validity} variable. We also cull any blocks which were previously observed or marked as erroneous but no longer needs to be. Only blocks that were originally marked as observed blocks, the blocks found between borders, are kept between minor steps. All other observed blocks, which are marked by neighbouring erroneous blocks, are always reverted due to performance gain, as erroneous blocks might oscillate. If such observed blocks still have an erroneous block as a neighbor, they will be detected once again if required. We keep the originally observed blocks because the boundaries between the regions usually do not change inside a major step and it is unnecessary to recalculate the observed blocks every minor step. 
 
-When the L-simulation has executed the minor step we interpolate its particle's quantities to use with the advection of the boundary particles in H. In our implementation the resolution factor, and therefore \textit{nTwoScaleSubSteps}, is set to 2, so we execute the minor step for H and advection twice. The minor step for H is performed in the same way as for L and the advection forwards every boundary particle in time using the interpolated values from their parents.
+When the L-simulation has executed the minor step we interpolate its particles' quantities to use with the advection of the boundary particles in H. In our implementation the resolution factor, and therefore \textit{nTwoScaleSubSteps}, is set to 2, so we execute the minor step for H and advection twice. The minor step for H is performed in the same way as for L and the advection forwards every boundary particle in time using the interpolated values from their parents.
 
 Interpolating feedback info and updating parent particle is performed in the same way as in the two-scale method. For the feedback info, each parent gets an average velocity from all its children and uses it to calculate a feedback force. For the parent update every H-particle receive its nearest L-particle as a parent. 
 
-The determination of the H-region and the adding and removing of particles is tightly coupled and since changing the number of particles requires the neighborhood grid to update, we chose to place those steps outside the minor loop. Update parent was placed outside for the same reason; if an H-particle gets a parent which is outside the H-region, the child would have to be removed. Only updating the parent particle every major step instead of every minor step gave us no stability issues or visual artifacts. 
+The determination of the H-region and the adding and removing of particles is tightly coupled and since changing the number of particles requires the neighborhood grid to update, we chose to place those steps outside the minor loop. Parent update was placed outside for the same reason; if an H-particle gets a parent which is outside the H-region, the child would have to be removed. Only updating the parent particle every major step instead of every minor step gave us no stability issues or visual artifacts. 
 
 
 %%%%%%%%
 \subsection{Implementation differences}
 %%%%%%%%
-In our tests we noticed that the RTS' neighbor search for R1 particles was very expensive. We found that using the same neighbor search as for the other regions produced equally good visual results at a considerably shorter time. Therefore, we chose to not use the expanded neighbor search for neither RTS nor our combined method. 
+In our preliminary tests we noticed that the RTS' neighbor search for $\Re_1$ particles was very expensive. We found that using the same neighbor search as for the other regions produced equally good visual results at a considerably shorter time. Therefore, we chose to not use the expanded neighbor search for neither RTS nor our combined method. 
 
-Furthermore, we found that our algorithm did not benefit from the local correction step used in RTS. And since no local corrections were performed, the major steps were never halved and thus we could omit the associated logic. This gave us no discernible speedup but it simplified the algorithm. 
+Furthermore, we found that our algorithm did not benefit from the local correction step used in RTS. And since no local corrections were performed, the major steps were never halved and thus we could omit the associated logic. This gave us no discernible speedup but it simplified the algorithm.
 
-The constants used for the our algorithm are the same in the two-scale algorithm implementation; relax time, $\beta$-value for feedback force, and the higher allowed density error for the relaxed particles. However, for the pressure force interpolation we modified the velocity limitation; instead of limiting the final velocity of the particle, we only limit the velocity calculated by the pressure force that iteration. This gave us a much smoother transition from the relaxed state, with fewer sudden density changes. The $\beta$-value for the force interpolation was nevertheless experimentally set to 0.05, same as in the original two-scale paper. 
+Based on empirical experiments, the constants used for our algorithm are the same as in the two-scale algorithm implementation; relax time, $\beta$-value for feedback force, and the higher allowed density error for the relaxed particles. However, for the pressure force interpolation we modified the velocity limitation; instead of limiting the final velocity of the particle, we only limit the velocity calculated by the pressure force that iteration. This gave us a much smoother transition from the relaxed state, with fewer sudden density changes. The $\beta$-value for the force interpolation was nevertheless experimentally set to 0.05, same as in the original two-scale paper \citep{solenthaler2011two}. 
 
 The density correction scheme that Goswami used for the prediction-correction loop proved to work well, so we adopted it, together with the number of activity levels which was set to four. 
 

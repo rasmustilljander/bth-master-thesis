@@ -24,6 +24,9 @@
 \usepackage[square]{natbib}
 \usepackage{enumitem}
 
+\usepackage{pdfpages}
+\usepackage[toc,page]{appendix}
+
 \usepackage{xtab}
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
@@ -65,7 +68,7 @@
 
 \par\vspace {7cm}
 
-{\Huge\textbf{Combining regional time stepping with two-scale PCISPH method}}   % two-scale resolution ?
+{\Huge\textbf{Combining Regional Time Stepping With Two-Scale PCISPH Method}}  
 
 \par\vspace {0.5cm}
 
@@ -123,7 +126,6 @@ SE--371 79 Karlskrona, Sweden & Fax & : & +46 455 38 50 57 \\
 
 \setcounter{page}{1}
 
-% ABSTRACT
 
 \abstract
 \begin{changemargin}{+1cm}{+1cm}
@@ -151,12 +153,35 @@ but that many methods fail to address factors such as stakeholder value or
 internal value. Moreover, we conclude that there is a need for further empirical
 validation of the models in full scale industry trials.
 
+% ABSTRACT
+% Vad har vi gjort?
+% Vad är det baserat på?
+% Hur har vi baserat det på ovanstående?
+% I runda svängar vad gör vi?
+    % L vs H
+    % Blocks
+    % Regions
+% Vad innebär det att vi har gjort så här?
+% Vilka resultat fick vi?
+    % We see the potential of a speedup as our combined technique is faster blah blah.
+    % However, our results is inconclusive since we were unable to reproduce the  /.../
+
+%\abstract
+%\begin{changemargin}{+1cm}{+1cm}
+%\noindent
+%We present a method to speed up the particle based PCISPH fluid simulation technique. Our method is a combination of the existing algorithms regional time stepping (RTS) and two-scale resolution. We only utilize the region computations in the fluids high resolution area. By predefining a high resolution part of the simulation where complex behaviour, such as droplets and waves, is expected to emerge we can split the simulation into two separate parts. One low resolution part which acts as the base of the fluid, and a high resolution part which is a subset of the low resolution part. The low resolution is simulated using only a fraction of the computational time and with larger, less exact particles than compared to the original PCISPH. The high resolution part on the other hand uses smaller particles to simulate the subset with greater detail. This is achieved by discretizing the high resolution fluid into blocks which is used to further evaluate the fluid based on exerted forces. Block with the most exerted forces are updated more often than the blocks with smaller exerted forces.
+
+% Vad innebär det att vi har gjort så här?
+%By doing so we have successfully split the simulation into two parts, the low resolution part which uses less time to compute but still achieves a visually pleasing result. And the high resolution part where we expect to spend more computational time to achieve a visually pleasing result. By further dividing the high resolution part we can reduce the total required calculations but still achieve the same result.
+
+% Vilka resultat fick vi?
+%We can see potential of a speedup in our results as our algorithm is faster than both RTS and two-scale, as well as standard PCISPH. The results from our two-scale implementation, on the other hand, shows a slowdown compared to PCISPH. Since we were unable to reproduce the results from the original two-scale paper, our results are inconclusive but promising.
+
 \par\vspace {1cm}
 % 3-4 keywords, maximum 2 of these from the title, starts 1 line below the
 % abstract.
 \noindent
-\textbf{Keywords:} 3-4 keywords, maximum 2 of these from the title, starts 1 line
-below the abstract.
+\textbf{Keywords:} smooth particle hydrodynamics, two-scale, regional time stepping, fluid simulation 
 
 \end{changemargin}
 
@@ -194,4 +219,10 @@ below the abstract.
 \bibliographystyle{apalike}
 \nocite{*}
 \bibliography{references}
+
+\begin{appendices}
+\chapter{Regional Time Stepping unpublished paper}
+\includepdf[pages={-}]{appendices/rts.pdf}
+\end{appendices}
+
 \end{document}

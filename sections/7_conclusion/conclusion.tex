@@ -8,24 +8,23 @@
 % Future work, how can this be expaned
 
 
-We have presented a combined algorithm based on the two algorithms regional time stepping and two-scale resolution. Seeing as we can run complete simulations and the visual results do not differ noticeably from the base algorithms, the answer to our first research question is: yes, it is possible to construct a combined algorithm. 
+We have presented a combined algorithm based on the two algorithms regional time stepping and two-scale simulation. Seeing as we can run complete simulations and the visual results do not differ noticeably from the base algorithms, the answer to our first research question is: yes, it is possible to construct a combined algorithm. 
 
 However, our implementation of the two-scale algorithm seem to give incorrect results and our combined algorithm utilizes the same implementation. Although we see a slight speed up, we can not with certainty answer our second research question as the results undoubtedly would change should the two-scale algorithm give better results. 
 
-Overall, our combined method has potential, but it is restricted by scene configuration and H-region selection. However, for optimized scenes, the speed up probably makes up for the time spent configuring the scenes and the algorithms relative complexity compared to RTS and two-scale resolution. 
+Otherwise, our combined method has potential, but it is restricted by scene configuration and H-region selection. However, for optimized scenes, the speed up makes up for the time spent configuring the scenes and the algorithms relative complexity compared to RTS and two-scale simulation. 
 
 
 %%%%%%%%
 \section{Future work}
 %%%%%%%%
 
-An obvious continuation would be to try and reproduce Solenthalers results with the two-scale implementation. This might be as simple as building better suited scenes or implementing support for a resolution factor of 4, or it might require a whole re-implementation of the algorithm. 
-
-Regardless of the two-scale implementation, the algorithm presented in this paper could also be expanded using the Graphic Processing Unit(GPU) rather than the Central Processing Unit(CPU). As mentioned by \citet{goswami2014regional} the blocks can be treated as parallelization units for computing the physics of particles within, as also implemented by \citet{goswami2010interactive}.
+One continuation would be to try and reproduce Solenthaler and Gross' results with the two-scale implementation. This might be as simple as building better suited scenes or implementing support for a resolution factor of 4, or it might require a whole re-implementation of the algorithm. Regardless of the two-scale implementation, the algorithm presented in this paper could also be expanded using the GPU rather than the CPU. As mentioned by \citet{goswami2014regional} the blocks can be treated as parallelization units for computing the physics of particles within, as also implemented by \citet{goswami2010interactive}.
 
 To further explore the possibility to perform more complex calculations for determining the high resolution area for particles in L could be interesting. In our algorithm we manually determine, prior to the simulation, one single 3-dimensional cuboid which we use to perform simple location based queries against. However, as suggested by \citet{solenthaler2011two}, exploring the possibilities with either surface detection or using a view frustum to define high resolution areas could be an interesting next step. 
 
 There is another point of view that could be explored. Rather than combining the two methods as shown in this paper it could also be interesting to explore the possibility to take advantage of differently sized particles in different regions. For instance letting $\Re_1$ and $\Re_2$ be H-regions or even having one particle size per region level. 
+
 
 
 \end{document}

@@ -1,0 +1,22 @@
+\begin{table}[]
+\centering
+\caption{My caption}
+\label{my-label}
+\begin{tabular}{rllcc}
+\multicolumn{1}{l}{}          & Technique & Particle Count      & \multicolumn{1}{l}{Time (s)} & \multicolumn{1}{l}{Speedup} \\ \cline{2-5} 
+Gallery                       & PCISPH    & 1.1M                & 54k                          & -                           \\
+                              & Two-scale & L: 140k H: 400-600k & 55k                          & -1.1\%                      \\
+                              & RTS       & 1.1M                & 48k                          & 13.8\%                      \\
+                              & Combined  & L: 144k H: 400-600k & 45k                          & 19.7\%                      \\
+                              &           &                     &                              &                             \\
+Double dam break              & PCISPH    & 950k                & 45k                          & -                           \\
+                              & Two-scale & L: 120k H: 300-500k & 106k                         & -57.1\%                     \\
+                              & RTS       & 950k                & 41k                          & 12.3\%                      \\
+                              & Combined  & L: 120k H: 300-500k & 42k                          & 7.4\%                       \\
+                              &           &                     &                              &                             \\
+Double dam break with pillars & PCISPH    & 950k                & 47k                          & -                           \\
+\multicolumn{1}{l}{}          & Two-scale & L: 120k H: 300-570k & 118k                         & -60.0\%                     \\
+\multicolumn{1}{l}{}          & RTS       & 950k                & 42k                          & 12.7\%                      \\
+\multicolumn{1}{l}{}          & Combined  & L: 120k H: 300-570k & 41k                          & 16.1\%                     
+\end{tabular}
+\end{table}
