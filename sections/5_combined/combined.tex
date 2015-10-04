@@ -6,7 +6,7 @@
 \section{Our combined method}
 %%%%%%%%
 
-For our combined algorithm we had to find a way to fit the two-scale and RTS algorithms together. By an iterative process which included some trial and error we found that they could be combined by computing region membership for blocks in both the L and the H-simulation. Since both simulations share many algorithm steps, we decided to encapsulate some parts of the RTS algorithm into two steps: \textit{pre-minor step} and \textit{minor step}, resulting in algorithm \ref{alg:combined:main}. The pre-minor step contains calculations that are only required once per major step, for instance updating neighborhood grid and determining region membership, this can be seen in algorithm \ref{alg:combined:preminorstep}. After performing the pre-minor step for the L-simulation we determine where the H-region is and add or remove H-particles, depending on their parents' position. The pre-minor step for H is performed in a likewise manner to L and then the minor step loop is entered. 
+For our combined algorithm we had to find a way to fit the two-scale and RTS algorithms together. By an iterative process we found that they could be combined by computing region membership for blocks in both the L and the H-simulation. Since both simulations share many algorithm steps, we decided to encapsulate some parts of the RTS algorithm into two steps: \textit{pre-minor step} and \textit{minor step}, resulting in algorithm \ref{alg:combined:main}. The pre-minor step contains calculations that are only required once per major step, for instance updating neighborhood grid and determining region membership, this can be seen in algorithm \ref{alg:combined:preminorstep}. After performing the pre-minor step for the L-simulation we determine where the H-region is and add or remove H-particles, depending on their parents' position. The pre-minor step for H is performed in a likewise manner to L and then the minor step loop is entered. 
 
 \begin{algorithm}[h]
     \caption{Combined Technique}
@@ -102,7 +102,7 @@ Furthermore, we found that our algorithm did not benefit from the local correcti
 
 Based on empirical experiments, the constants used for our algorithm are the same as in the two-scale algorithm implementation; relax time, $\beta$-value for feedback force, and the higher allowed density error for the relaxed particles. However, for the pressure force interpolation we modified the velocity limitation; instead of limiting the final velocity of the particle, we only limit the velocity calculated by the pressure force that iteration. This gave us a much smoother transition from the relaxed state, with fewer sudden density changes. The $\beta$-value for the force interpolation was nevertheless experimentally set to 0.05, same as in the original two-scale paper \citep{solenthaler2011two}. 
 
-The density correction scheme that Goswami used for the prediction-correction loop proved to work well, so we adopted it, together with the number of activity levels which was set to four. 
+%The density correction scheme that Goswami used for the prediction-correction loop proved to work well, so we adopted it, together with the number of activity levels which was set to four. 
 
 %For the sake of simplicity and because of time restraints we chose not to implement the surface detection algorithm. % behöver det här ens nämnas?
 

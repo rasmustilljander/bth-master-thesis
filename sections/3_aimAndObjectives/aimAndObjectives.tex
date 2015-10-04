@@ -2,19 +2,48 @@
 \begin{document}
 \tracingall
 
-The aim of this thesis is to explore the possibilities of combining two methods designed to improve on two different aspects of PCISPH. To this end, we have defined two research questions: 
+%%%%%%%%
+\section{Aim and Objectives}
+%%%%%%%%
+The aim of this thesis is to explore the possibility of combining two methods designed to improve on two different aspects of PCISPH. The goal is to reduce total computation time and ultimately speed up the process of creating realistic fluids in computer graphics. To this end, we have defined two research questions.
 
+%%%%%%%%
+\section{Research Questions}
+%%%%%%%%
 \begin{displayquote}
-{\large \textbf{Q1.}} 
-Is it possible to construct a combined technique based on the regional time stepping, which introduces an elevating effect on the time step, together with the two-scale simulation, which lowers particle count?
+{\large \textbf{RQ1.}} 
+Is it possible to construct a combined algorithm based on the regional time stepping, which introduces an elevating effect on the time step, together with the two-scale simulation, which lowers particle count?
 \end{displayquote} 
 
-In order to answer this question we implemented both the two-scale algorithm as well as the regional time stepping algorithm, followed by the implementation of the combined algorithm. 
-
 \begin{displayquote}
-{\large \textbf{Q2.}} Will a combined technique simulate large body of fluids faster compared to its two base techniques and PCISPH?
+{\large \textbf{RQ2.}} If a combined algorithm is possible, will it simulate large body of fluids faster compared to its two base techniques and PCISPH?
 \end{displayquote}
 
-This question is tightly coupled to the first one, and to answer it we defined a set of test scenarios. In these scenarios we changed particle number, simulation time, and the scene configuration. Tests were then performed using all four techniques with same, or equivalent, parameters. 
+
+%%%%%%%%
+\section{Method}
+%%%%%%%%
+
+In order to answer the research questions we used implementation and experiment methodologies. These methods suit this kind of issue since we get measurable results from experiments, which lead us to implement the new algorithm to be able to perform experiments.
+
+We implemented both the two-scale algorithm and the regional time stepping algorithm, followed by the construction and implementation of the combined algorithm. We evaluated the first question using two criteria: is the combined algorithm able to run a simulation and if so, does the visual results differ significantly from the original algorithms?
+
+The second question is tightly coupled to the first one, and to answer it we defined a set of test scenarios. In these scenarios we changed particle number and the scene configuration. Tests were then performed using all four algorithms with same, or equivalent, parameters on all three scenes. We measure the time it took to run each test and then calculated and compare the speed up of all algorithms over PCISPH. 
+
+
+%%%%%%%%
+\subsection{Implementation}
+%%%%%%%%
+
+By implementing both base algorithms we got a foundation, as well as a deeper understanding to help us construct our combined algorithm. During our implementation we used the visual C++ 12.0 compiler on Windows 8.1 OS and compiled towards 64-bit. 
+
+
+%%%%%%%%
+\subsection{Experiment}
+%%%%%%%%
+
+Our experiment consisted of twelve tests, each running one simulation until 10 seconds of real time had been simulated. Throughout the tests we varied the scene complexity and particle count, however, particle size and time step remained the same: 0.06 and 0.001s respectively. The scenes used were inspired by scenes in both original papers, in that they were relatively simple with a few obstacles. 
+
+The tests were performed on computers with 16 gigabyte of memory, Intel Core i7-2700K processors (3.5 GHz, 8 cores) and were multithreaded using OpenMP. In all tests we used static particles for walls and collision objects for the simplicity when it comes to implementation. Due to time limitations, we could only run each test once. 
 
 \end{document}

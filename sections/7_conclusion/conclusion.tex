@@ -2,17 +2,11 @@
 \begin{document}
 \tracingall
 
-% Wrap up, what did we do?
-% Answer research questions, what questions did we ask? Yes, inconclusive
-% Results, what were our results for these questions?
-% Future work, how can this be expaned
+We have presented a combined algorithm based on the two algorithms regional time stepping and two-scale simulation. Seeing as we can run complete simulations and that the visual results do not differ noticeably from the base algorithms, the answer to our first research question is: it is possible to construct a combined algorithm. 
 
+However, our implementation of the two-scale algorithm seems to give incorrect results and since our combined algorithm utilizes the same implementation we can not be sure that our results are correct. Although we see a slight speed up, we can not with certainty answer our second research question as the results undoubtedly would change should the two-scale algorithm give better results. 
 
-We have presented a combined algorithm based on the two algorithms regional time stepping and two-scale simulation. Seeing as we can run complete simulations and the visual results do not differ noticeably from the base algorithms, the answer to our first research question is: yes, it is possible to construct a combined algorithm. 
-
-However, our implementation of the two-scale algorithm seem to give incorrect results and our combined algorithm utilizes the same implementation. Although we see a slight speed up, we can not with certainty answer our second research question as the results undoubtedly would change should the two-scale algorithm give better results. 
-
-Otherwise, our combined method has potential, but it is restricted by scene configuration and H-region selection. However, for optimized scenes, the speed up makes up for the time spent configuring the scenes and the algorithms relative complexity compared to RTS and two-scale simulation. 
+To conclude, our combined method has potential, but it is restricted our two-scale implementation. In addition, the speed up we already have makes up for the algorithms relative complexity compared to RTS and two-scale simulation. 
 
 
 %%%%%%%%
@@ -25,6 +19,8 @@ To further explore the possibility to perform more complex calculations for dete
 
 There is another point of view that could be explored. Rather than combining the two methods as shown in this paper it could also be interesting to explore the possibility to take advantage of differently sized particles in different regions. For instance letting $\Re_1$ and $\Re_2$ be H-regions or even having one particle size per region level. 
 
+We would also like to run our tests several more times and perform statistical analyses on the results. This way we could establish the validity of our current results. 
 
+% TODO Vi körde bara tester en gång, för att få ett vetenskapligt resultat så skulle man behöva köra fler gånger. 
 
 \end{document}

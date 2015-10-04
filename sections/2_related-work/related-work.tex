@@ -4,24 +4,66 @@
 
 \label{ch:related}
 
-%Grid based work
+%%%%%%%%
+\section{Smooth Particle Hydrodynamics}
+%%%%%%%%
+Much of today's work is based on a variant of a Lagrangian method called \textit{Smooth Particle Hydrodynamics} (SPH) \citep{lucy1977numerical, gingold1977smoothed}, as the name implies SPH uses particles to simulate fluids. Most calculations are based on a particles neighborhood, i.e. all particles within a certain distance of the particle. Each particle uses the distance to its neighbors to calculate a density value, this value is then used to compute the forward force and velocity. The new position is calculated by forwarding every particle's current position a small distance, using its velocity and a given time step. See algorithm \ref{alg:sph}. 
+
+\begin{algorithm}[h]
+   \caption{SPH}
+    \label{alg:sph}
+    \begin{algorithmic}[1]
+    \While {animating}
+        \For {each particle \textbf{\textit{i}}}
+            \State find neighborhoods N$_i$(t)
+        \EndFor
+        \For {each particle \textbf{\textit{i}}}
+            \State compute density \textbf{$\rho$}$_i$(t)
+            \State compute pressure \textit{p}$_i$(t)
+        \EndFor
+        \For {each particle \textbf{\textit{i}}}
+            \State compute forces \textbf{F}$^{p, v, g, ext}$(t)
+        \EndFor
+        \For{each particle \textbf{\textit{i}}}
+            \State compute new velocity \textbf{v}$_i$(t+1)
+            \State compute new position \textbf{x}$_i$(t+1)
+        \EndFor
+    \EndWhile
+   \end{algorithmic}
+\end{algorithm}
+
+It is important to make sure that particles maintain physically correct placement, failure to do so can lead to undesirable visual effects and may even introduce instability. This placement restriction is called incompressibility and most liquids in real life are incompressible. The standard SPH method \citep{lucy1977numerical, gingold1977smoothed} does not enforce incompressibility so in an attempt to do so, \citet{becker2007weakly} introduced Weakly Compressible SPH (WCSPH). While this method enforced near-incompressibility it came with a time step restriction which required a low time step to stay stable.
+
+To increase the time step \citet{solenthaler2009predictive} developed a Predictive-Corrective Incompressible SPH (PCISPH). By using larger time step their approach could simulate further with less total computational time. This, however, introduced aforementioned errors in density and made the entire simulation unstable. They solved this by introducing an additional step in the algorithm which predicts each particle's new position and iteratively applies a correction force if the density is over a certain threshold. The correction force is then used to calculate the particle's actual new position. Although this leads to each iteration being more expensive when compared to WCSPH, a significant speedup is achieved because the time step can be many times larger.
+
+To further decrease total computation time \citet{solenthaler2011two} also introduced the Two-scale particle simulation method. This method uses two separate simulation with different particle sizes. The particles in one simulation only interacts indirectly with the particles in the other. One simulation uses larger particles, and therefore a smaller amount of them, and the other simulation uses smaller particles but in a limited area. This area is a subset of the whole simulation where details are more important. Since the rest of the simulation requires fewer particles, and therefore less computations, a speedup is achieved. 
+
+In contrast to reducing the number of particles, Regional Time Stepping (RTS) by \citet{goswami2014regional} reduces computation time by using varying time steps based on the amount of movement in each area. Particles in areas with small movements are assigned larger time step and are therefore not required to update as often. On the other hand, particles in areas with much movement are assigned a smaller time step. Thus less computational time is spent on the parts that exhibits less complexity.
+
+Seeing as the two-scale particle simulation and regional time stepping methods improve on two different aspects of the PCISPH technique, we propose a method combining the two. Our method, like two scale, uses two simulations both of which individually calculate what time steps to use in the different regions, the same way \citet{goswami2014regional} does.
+
+
+%%%%%%%%
+\section{Related Work}
+%%%%%%%%
+
+% Grid based work
 With Eulerian techniques, it is common to use height-field models to simulate water, introduced by \citet{kass1990rapid}. This was later combined with marked particles to keep track of the free surface \citep{foster1996realistic}. A method called the level set method uses several sets of levels and surface marker particles \citep{enright2002hybrid}. 
 
+% Particle based work
 The Lagrangian method SPH was originally used for fluids other than incompressible liquids: stars and particle clouds in astrophysics \citep{lucy1977numerical, gingold1977smoothed}; smoke, gas and fires \citep{stam1995depicting}; deformable bodies \citep{desbrun1996smoothed}. The SPH method was first applied to incompressible flows by \citet{monaghan1994simulating} and later by \citet{muller2003particle} to animate fluids. 
 
-Usually, one of two strategies is used to enforce incompressibility: incompressible SPH (ISPH) or weakly compressible SPH (WCPSH), \citep{becker2007weakly}. The ISPH methods solve a pressure Poisson equation while WCPSH uses a stiff equation of state (EOS). To reach density fluctuations below 1\%, a common limit for incompressibility, the stiffness value for the EOS has to be large enough. However, larger stiffness values requires smaller time steps as the value often dominates the Courant-Friedrichs-Levy condition \citep{solenthaler2009predictive}. In contrast, ISPH methods can have higher time step but each iteration takes much longer time. This was adressed by \citet{he2012local} in the local Poisson SPH and by \citet{ihmsen2014implicit} in the Implicit Incompressible SPH. 
+Usually, one of two strategies is used to enforce incompressibility: incompressible SPH (ISPH) or weakly compressible SPH (WCPSH), \citep{becker2007weakly}. The ISPH methods solve a pressure Poisson equation while WCPSH uses a stiff equation of state (EOS). To reach density fluctuations below 1\%, a common limit for incompressibility, the stiffness value for the EOS has to be large enough. However, larger stiffness values requires smaller time steps as the value often dominates the Courant-Friedrichs-Levy condition \citep{solenthaler2009predictive}. In contrast, ISPH methods can have higher time step but each iteration takes much longer time to compute. This was adressed by \citet{he2012local} in the local Poisson SPH and by \citet{ihmsen2014implicit} in the Implicit Incompressible SPH. 
 
 WCSPH has been the basis for many algorithms trying to speed up the fluid simulation. \citet{goswami2010interactive} used the processing power of the GPU and \citet{ihmsen2011parallel} examined possibilities and suitable data structures for parallel implementations. 
 
-Other attempts have been made to improve on the SPH method, most notably the Predictive-Corrective Incompressible SPH (PCISPH) method \citep{solenthaler2009predictive}. Instead of solving an equation, PCISPH iteratively predicts the position of all particles and then corrects the pressure forces from pressure values of the predicted positions until the density error of the fluid is below a threshold. This method allowed for higher time steps while maintaining a relatively low computation time per iteration. 
-
-Approaches to further speed up the simulations include varying the particle size to reduce the total number of particles. This can be done dynamically over the whole fluid \citep{adams2007adaptively,hong2008adaptive} or only in certain areas \citep{solenthaler2011two,horvath2013mass}. 
+Other attempts have been made to improve on the SPH method, most notably the PCISPH method \citep{solenthaler2009predictive}, mentioned before. Approaches to further speed up the simulations include varying the particle size to reduce the total number of particles. This can be done dynamically over the whole fluid \citep{adams2007adaptively,hong2008adaptive} or only in certain areas \citep{solenthaler2011two,horvath2013mass}. 
 
 There has also been research in adaptively varying the time step to allow for longer time steps when shorter ones are not necessary. Both globally adaptive \citep{ihmsen2010boundary,goswami2011time} or locally adaptive \citep{goswami2014regional} time stepping has shown increase in efficiency. 
 
-% Skriv nåt om hybrid lösningar, Raveendran: Hybrid Smoothed Particle Hydrodynamics
-
-% Bra avslut kanske?
 For a more thorough discussion of different implementations, we refer to \citet{ihmsen2014sph}.
+
+% Utöka ?
+% Skriv nåt om hybrid lösningar, Raveendran: Hybrid Smoothed Particle Hydrodynamics
 
 \end{document}
